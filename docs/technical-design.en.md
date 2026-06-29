@@ -151,9 +151,9 @@ Three-column grid: sidebar | board (centered) | pool. Top bar aligned to game wi
 
 | Type | Target |
 |------|--------|
-| Unit | `engine/*` — hands, adjacency, v2 scoring, undo, line hints |
-| Golden vs Python | Optional; not in CI |
-| E2E | Not implemented |
+| Unit | `engine/*` — hands, adjacency, v4 scoring, undo, line hints |
+| Golden vs Python | `fixtures/golden-scores.json` — CI on both stacks |
+| E2E | Playwright `e2e/solo.spec.ts` — full solo game |
 
 Run: `cd poc && npm test`
 
@@ -167,6 +167,7 @@ Run: `cd poc && npm test`
 | W2 | Grid / Pool / themes | Done |
 | W3 | dnd-kit + adjacency | Done |
 | W4 | Score, undo, layout, hover, rules dialog, light/dark | Done |
+| W5 | GitHub Pages, CI, golden tests, E2E, tutorial, lines panel | Done |
 
 PoC version **0.1.0**.
 

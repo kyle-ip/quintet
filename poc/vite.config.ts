@@ -3,7 +3,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === "pages" ? "/quintet/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,5 +14,6 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    exclude: ["**/node_modules/**", "e2e/**"],
   },
-});
+}));

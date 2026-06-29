@@ -37,7 +37,8 @@ status: living
 | **Phase 2** | Score calibration | v2 coefficients (50k Monte Carlo) | ✅ Done |
 | **Phase 3** | Two-player playability | Local versus/match, greedy AI, simulation | ✅ Done |
 | **Phase 4** | Browser playability | React solo PoC | ✅ Done |
-| **Phase 5+** | Product expansion | Web two-player, online, ranked | 📋 Planned |
+| **Phase 5** | PoC hardening & deploy | GitHub Pages, CI, golden tests, E2E, mobile touch | 🚧 In progress |
+| **Phase 6+** | Product expansion | Web two-player, online, ranked | 📋 Planned |
 
 ### 2.2 Documentation
 
@@ -52,7 +53,7 @@ status: living
 
 | Area | Capabilities |
 |------|--------------|
-| Core engine | Cards/deck, 5×5 grid, adjacency, 12-line hands, v2 scoring |
+| Core engine | Cards/deck, 5×5 grid, eight-direction adjacency, 12-line hands, v4 scoring |
 | CLI | `solo`, `versus`, `match` |
 | Match format | Two games, alternating first player; tie-break chain |
 | AI | Greedy bot (`ai` command) |
@@ -70,7 +71,10 @@ status: living
 | Drag-and-drop | Pool → legal empty cells; first card anywhere, then eight-direction adjacency |
 | Pool k | 1–5 at setup; locked after first placement until new game |
 | 25 turns | Fill 5×5 → game over |
-| v2 scoring | **Complete lines only** (5/5); formulas match Python |
+| v4 scoring | **Complete lines only** (5/5); formulas match Python |
+| Play timer | Starts on first placement; shown in sidebar and summary |
+| Lines panel | Collapsible 12-line progress in sidebar |
+| Tutorial | First-visit How to play overlay |
 
 #### UI and UX
 
@@ -130,8 +134,8 @@ themes/         # Pluggable card faces
 | Online / accounts | No backend |
 | Browser AI opponent | Greedy bot in Python only |
 | Persistent 12-line panel | End-game modal + hover cover main cases |
-| E2E automation | Not implemented |
-| TS/Python golden-score CI | Not in pipeline |
+| E2E automation | ✅ Playwright solo game |
+| TS/Python golden-score CI | ✅ `fixtures/golden-scores.json` + GitHub Actions |
 | Native apps | Responsive web only |
 
 ---

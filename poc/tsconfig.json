@@ -15,6 +15,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -22,5 +23,6 @@
       "@themes/index": ["themes/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
 }

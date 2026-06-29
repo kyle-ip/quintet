@@ -27,6 +27,10 @@ export function AppModal({
     if (!dialog) return;
     if (open && !dialog.open) {
       dialog.showModal();
+      const focusable = dialog.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      focusable?.focus();
     } else if (!open && dialog.open) {
       dialog.close();
     }
@@ -46,6 +50,8 @@ export function AppModal({
     <dialog
       ref={dialogRef}
       className={`app-modal${className ? ` ${className}` : ""}`}
+      role="dialog"
+      aria-modal="true"
       aria-labelledby={titleId}
       onClick={(e) => {
         if (e.target === dialogRef.current) {

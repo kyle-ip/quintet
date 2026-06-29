@@ -1,0 +1,57 @@
+.lines-panel {
+  margin-top: 0.5rem;
+}
+
+.lines-panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 6px;
+  background: var(--color-btn-bg);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.lines-panel-toggle:hover {
+  background: var(--color-btn-hover);
+}
+
+.lines-panel-badge {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.lines-panel-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+  font-size: 0.72rem;
+}
+
+.lines-panel-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lines-panel-complete .lines-panel-meta {
+  font-weight: 600;
+}
+
+.lines-panel-name {
+  flex-shrink: 0;
+}
+
+.lines-panel-meta {
+  text-align: right;
+  color: var(--color-text-muted, #666);
+}

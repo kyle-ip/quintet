@@ -37,7 +37,8 @@ status: living
 | **Phase 2** | 计分校准 | v2 系数（5 万局蒙特卡洛） | ✅ 完成 |
 | **Phase 3** | 双人可玩性 | Python 本地对战、赛制、贪心 AI、模拟 | ✅ 完成 |
 | **Phase 4** | 浏览器可玩性 | React 单人 PoC | ✅ 完成 |
-| **Phase 5+** | 产品化扩展 | 浏览器双人、在线、排位等 | 📋 规划中 |
+| **Phase 5** | PoC 巩固与可发布 | GitHub Pages、CI、金样、E2E、移动触摸 | 🚧 进行中 |
+| **Phase 6+** | 产品化扩展 | 浏览器双人、在线、排位等 | 📋 规划中 |
 
 ### 2.2 文档交付
 
@@ -52,7 +53,7 @@ status: living
 
 | 模块 | 能力 |
 |------|------|
-| 核心引擎 | 牌/牌堆、5×5 网格、邻接、12 线牌型判定、v2 计分 |
+| 核心引擎 | 牌/牌堆、5×5 网格、八方向邻接、12 线牌型判定、v4 计分 |
 | CLI | `solo` / `versus` / `match` 三种模式 |
 | 双人赛制 | 两局交替先手；总分 → 单局最高 → 优质线数量 → 平局 |
 | AI | 贪心 bot（`ai` 命令） |
@@ -73,22 +74,25 @@ python -m quintet.simulate --compare -n 50000
 
 | 功能 | 说明 |
 |------|------|
-| 拖放落子 | 从 Pool 拖至合法空格；首子任意，之后须与已放牌正交相邻 |
+| 拖放落子 | 从 Pool 拖至合法空格；首子任意，之后须与已放牌 **八方向**相邻 |
 | 牌池 k | 开局可选 1–5；首子落下后锁定直至新局 |
 | 25 回合 | 填满 5×5 后游戏结束 |
-| v2 计分 | 仅 **已满 5 张** 的线计入总分；与 Python 引擎公式一致 |
+| v4 计分 | 仅 **已满 5 张** 的线计入总分；与 Python 引擎公式一致 |
+| 计时 | 首子落下开始；终局停止；侧栏与总结展示 |
 
 #### 界面与交互
 
 | 功能 | 说明 |
 |------|------|
 | 三栏布局 | 顶栏（标题 + Undo/New game）｜侧栏｜棋盘（居中）｜牌池 |
-| 悬停提示 | 鼠标悬停已放牌 → 显示经过该格的行列/对角线、**已形成**牌型与 v2 公式（不做最优补牌预测） |
+| 悬停提示 | 鼠标悬停已放牌 → 显示经过该格的行列/对角线、**已形成**牌型与 v4 公式 |
+| 12 线面板 | 侧栏可折叠查看本局 12 线进度与得分 |
+| 新手教程 | 首次访问 How to play overlay；可随时 reopen |
 | 落子动画 | 拾牌、可落点脉冲、落子冲击反馈 |
 | 自定义弹窗 | 统一 `AppModal` 组件；替代浏览器原生 `confirm` |
 | New game 确认 | 进行中 / 已结束不同文案 |
 | 终局总结 | 填满后自动弹出：总分、12 线明细、最佳单线、操作次数；可「View results」再次查看 |
-| Scoring rules | 侧栏按钮 → 弹窗展示 v2 公式 + **每种牌型示例牌面与计算过程**（引擎实时生成） |
+| Scoring rules | 侧栏按钮 → 弹窗展示 v4 公式 + **每种牌型示例牌面与计算过程** |
 
 #### 外观与品牌
 
@@ -117,14 +121,18 @@ poc/src/
 themes/         # 可插拔卡牌主题
 ```
 
-#### 测试（15 项）
+#### 测试（32+ Vitest + 金样 + E2E）
 
 | 文件 | 覆盖 |
 |------|------|
 | `engine/engine.test.ts` | 邻接、落子流程、终局 |
-| `engine/scoring.test.ts` | v2 计分、live 计分 |
+| `engine/scoring.test.ts` | v4 计分、live 计分 |
+| `engine/golden.test.ts` | TS ↔ Python 金样 fixtures |
 | `engine/undo.test.ts` | 撤销快照 |
 | `config/scoringRules.test.ts` | 规则示例与引擎一致性 |
+| `e2e/solo.spec.ts` | Playwright 完整单人一局 |
+
+**Live demo：** [https://kyle-ip.github.io/quintet/](https://kyle-ip.github.io/quintet/)（`main` push 自动部署）
 
 ```bash
 cd poc && npm test && npm run build
@@ -140,8 +148,8 @@ cd poc && npm test && npm run build
 | 在线多人 / 账号 | 无后端 |
 | 浏览器 AI 对手 | Python 有贪心 bot；无 Web UI |
 | 持久化 12 线面板 | 终局弹窗 + 悬停提示已覆盖主要场景 |
-| E2E 自动化测试 | 未实现 |
-| TS / Python 分数金样 CI | 未接入流水线 |
+| E2E 自动化测试 | ✅ Playwright solo 一局 |
+| TS / Python 分数金样 CI | ✅ `fixtures/golden-scores.json` + GitHub Actions |
 | 原生 App | 仅响应式 Web |
 
 ---

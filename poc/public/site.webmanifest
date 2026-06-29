@@ -2,25 +2,25 @@
   "name": "Quintet",
   "short_name": "Quintet",
   "description": "5×5 poker grid card game",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1b4332",
   "theme_color": "#2d6a4f",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

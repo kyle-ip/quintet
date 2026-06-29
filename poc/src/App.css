@@ -47,6 +47,22 @@
   background: var(--color-btn-hover);
 }
 
+.how-to-play-btn {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 6px;
+  background: var(--color-btn-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.how-to-play-btn:hover {
+  background: var(--color-btn-hover);
+}
+
 .view-results-btn {
   width: 100%;
   padding: 0.35rem 0.5rem;

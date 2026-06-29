@@ -1,0 +1,182 @@
+{
+  "version": "v4",
+  "lines": [
+    {
+      "id": "royal_flush",
+      "cards": [
+        "Ah",
+        "Kh",
+        "Qh",
+        "Jh",
+        "10h"
+      ],
+      "hand": "royal_flush",
+      "points": 200.0
+    },
+    {
+      "id": "straight_flush",
+      "cards": [
+        "9s",
+        "8s",
+        "7s",
+        "6s",
+        "5s"
+      ],
+      "hand": "straight_flush",
+      "points": 165.9
+    },
+    {
+      "id": "four_of_a_kind",
+      "cards": [
+        "Kc",
+        "Kd",
+        "Kh",
+        "Ks",
+        "3c"
+      ],
+      "hand": "four_of_a_kind",
+      "points": 136.8
+    },
+    {
+      "id": "full_house",
+      "cards": [
+        "Qh",
+        "Qd",
+        "Qs",
+        "7c",
+        "7d"
+      ],
+      "hand": "full_house",
+      "points": 101.1
+    },
+    {
+      "id": "flush",
+      "cards": [
+        "Ad",
+        "Jd",
+        "8d",
+        "5d",
+        "2d"
+      ],
+      "hand": "flush",
+      "points": 80.0
+    },
+    {
+      "id": "straight",
+      "cards": [
+        "9c",
+        "8h",
+        "7d",
+        "6s",
+        "5c"
+      ],
+      "hand": "straight",
+      "points": 62.9
+    },
+    {
+      "id": "three_of_a_kind",
+      "cards": [
+        "10h",
+        "10d",
+        "10s",
+        "4c",
+        "2h"
+      ],
+      "hand": "three_of_a_kind",
+      "points": 26.3
+    },
+    {
+      "id": "two_pair",
+      "cards": [
+        "Js",
+        "Jd",
+        "8h",
+        "8c",
+        "3s"
+      ],
+      "hand": "two_pair",
+      "points": 18.1
+    },
+    {
+      "id": "one_pair",
+      "cards": [
+        "Ah",
+        "Ad",
+        "9c",
+        "6h",
+        "2s"
+      ],
+      "hand": "one_pair",
+      "points": 11.3
+    },
+    {
+      "id": "high_card",
+      "cards": [
+        "Ah",
+        "Qd",
+        "9c",
+        "6h",
+        "3s"
+      ],
+      "hand": "high_card",
+      "points": 6.5
+    },
+    {
+      "id": "wheel_straight",
+      "cards": [
+        "Ah",
+        "2d",
+        "3c",
+        "4s",
+        "5h"
+      ],
+      "hand": "straight",
+      "points": 62.5
+    },
+    {
+      "id": "grid_seed_42",
+      "grid_total": 109.4,
+      "line_totals": [
+        10.3,
+        11.0,
+        5.9,
+        12.1,
+        6.3,
+        6.2,
+        6.5,
+        11.1,
+        6.1,
+        10.8,
+        5.8,
+        17.6
+      ],
+      "cells": [
+        "5s",
+        "5h",
+        "8d",
+        "6s",
+        "2c",
+        "9h",
+        "9s",
+        "7h",
+        "2s",
+        "Qh",
+        "Qc",
+        "4h",
+        "7s",
+        "5d",
+        "6c",
+        "Jc",
+        "Ad",
+        "Ah",
+        "10d",
+        "Kc",
+        "7d",
+        "Qd",
+        "5c",
+        "Kd",
+        "2h"
+      ]
+    }
+  ]
+}

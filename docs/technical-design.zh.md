@@ -255,9 +255,9 @@ interface GameStore {
 
 | 类型 | 范围 |
 |------|------|
-| 单元测试 | `engine/*` — 牌型、邻接、v2 计分、撤销、线路 hint |
-| 对照测试 | 可选：与 Python 同 seed golden 对比（未入 CI） |
-| E2E | 未实现 |
+| 单元测试 | `engine/*` — 牌型、邻接、v4 计分、撤销、线路 hint |
+| 金样对照 | `fixtures/golden-scores.json` — TS / Python v4 计分一致（CI） |
+| E2E | Playwright `e2e/solo.spec.ts` — 完整单人一局 |
 
 ---
 
@@ -269,6 +269,7 @@ interface GameStore {
 | **W2** | Grid / Pool / PlayingCard + 5 主题 | ✅ |
 | **W3** | dnd-kit 拖拽 + 邻接 + 落子 | ✅ |
 | **W4** | 实时总分、撤销、布局、hover、计分规则、明暗模式 | ✅ |
+| **W5** | GitHub Pages 部署、CI、金样、E2E、教程、12 线面板 | ✅ |
 
 PoC 版本 **`0.1.0`**（[`poc/package.json`](../poc/package.json)）。
 

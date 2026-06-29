@@ -68,7 +68,7 @@ export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: Board
   const gridCells = useGameStore((s) => s.state.gridCells);
 
   return (
-    <section className="board" aria-label="5 by 5 grid">
+    <section className="board" aria-label="5 by 5 grid" data-testid="game-board">
       <div className="board-inner">
         <div className="grid">
           {Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, i) => {

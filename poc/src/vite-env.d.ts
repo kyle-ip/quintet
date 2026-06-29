@@ -1,3 +1,13 @@
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_E2E?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 declare module "@letele/playing-cards" {
   import type { ComponentType } from "react";
 

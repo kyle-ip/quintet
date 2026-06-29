@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./styles/card-effects.css";
+import { installTestHelpers } from "./testHelpers";
+
+if (import.meta.env.DEV || import.meta.env.VITE_E2E === "true") {
+  installTestHelpers();
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

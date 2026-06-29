@@ -8,6 +8,13 @@ from typing import Callable
 from quintet.hand import HandCategory, HandResult
 
 
+def round_score(value: float) -> float:
+    """One decimal place, half-up — keep in sync with TS `roundScore`."""
+    import math
+
+    return math.floor(value * 10 + 0.5 + 1e-9) / 10
+
+
 @dataclass(frozen=True, slots=True)
 class ScoringRule:
     name: str
@@ -180,8 +187,8 @@ def score_grid(grid, rule: ScoringRule = DEFAULT_SCORING) -> dict:
             {
                 "line": line_id,
                 "hand": hand.name,
-                "points": round(pts, 1),
+                "points": round_score(pts),
                 "cards": [str(c) for c in cards],
             }
         )
-    return {"total": round(total, 1), "lines": breakdown}
+    return {"total": round_score(total), "lines": breakdown}

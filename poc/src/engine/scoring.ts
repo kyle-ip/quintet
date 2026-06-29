@@ -63,8 +63,9 @@ export function scoreV3(hand: HandResult): number {
 /** Active scoring rule for gameplay. */
 export const scoreActive = scoreV4;
 
+/** Round to one decimal place (half-up), shared with Python `round_score`. */
 export function roundScore(value: number): number {
-  return Math.round(value * 10) / 10;
+  return Math.floor(value * 10 + 0.5 + 1e-9) / 10;
 }
 
 export interface LineScore {

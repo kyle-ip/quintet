@@ -65,7 +65,7 @@ export function Pool({ disabled = false }: PoolProps) {
 
   return (
     <div className="pool-column">
-      <section className="pool-station" aria-label="Deck and card pool">
+      <section className="pool-station" aria-label="Deck and card pool" data-testid="card-pool">
         <header className="pool-station-header">
           <span className="pool-station-title">Pick a card</span>
           <span className="pool-station-meta" aria-label={`${pool.length} of ${poolSize} in pool`}>

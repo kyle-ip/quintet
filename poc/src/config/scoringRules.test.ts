@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { HandCategory } from "@/engine/hand";
 import { evaluateFive } from "@/engine/hand";
 import { parseCard } from "@/engine/card";
-import { scoreV4 } from "@/engine/scoring";
+import { roundScore, scoreV4 } from "@/engine/scoring";
 import { buildScoringExample, SCORING_RULES_V4 } from "@/config/scoringRules";
 
 describe("scoring rules examples", () => {
@@ -12,7 +12,7 @@ describe("scoring rules examples", () => {
       const hand = evaluateFive(cards);
       const points = scoreV4(hand);
       const example = buildScoringExample(rule.exampleCards);
-      expect(example.points).toBe(Math.round(points * 10) / 10);
+      expect(example.points).toBe(roundScore(points));
       expect(example.calculation).toContain(example.points.toFixed(1));
     }
   });

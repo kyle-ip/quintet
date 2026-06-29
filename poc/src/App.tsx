@@ -2,6 +2,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -20,6 +21,8 @@ import type { ColorMode } from "@/config/colorMode";
 import { ScoringRulesModal } from "@/components/ScoringRules/ScoringRulesModal";
 import { NewGameConfirmModal } from "@/components/NewGameConfirm/NewGameConfirmModal";
 import { GameSummaryModal } from "@/components/GameSummary/GameSummaryModal";
+import { FirstGameTutorial, shouldShowTutorial } from "@/components/Tutorial/FirstGameTutorial";
+import { LinesPanel } from "@/components/LinesPanel/LinesPanel";
 import { usePlayTimerDisplay } from "@/hooks/usePlayTimer";
 import "./App.css";
 
@@ -50,6 +53,7 @@ export default function App() {
   const [scoringRulesOpen, setScoringRulesOpen] = useState(false);
   const [newGameConfirmOpen, setNewGameConfirmOpen] = useState(false);
   const [gameSummaryOpen, setGameSummaryOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
   const placeFxTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevStatus = useRef(state.status);
 
@@ -66,8 +70,15 @@ export default function App() {
     prevStatus.current = state.status;
   }, [state.status]);
 
+  useEffect(() => {
+    if (shouldShowTutorial()) {
+      setTutorialOpen(true);
+    }
+  }, []);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
   );
 
   const legalKeys = new Set(legalCellKeys(state));
@@ -202,7 +213,17 @@ export default function App() {
                   ) : null}
                 </dl>
               </div>
+
+              <LinesPanel score={liveScore} />
             </aside>
+
+            <button
+              type="button"
+              className="how-to-play-btn"
+              onClick={() => setTutorialOpen(true)}
+            >
+              How to play
+            </button>
 
             {state.status === "finished" && !gameSummaryOpen ? (
               <button
@@ -241,6 +262,7 @@ export default function App() {
         </DragOverlay>
       </DndContext>
 
+      <FirstGameTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
       <ScoringRulesModal open={scoringRulesOpen} onClose={() => setScoringRulesOpen(false)} />
       <NewGameConfirmModal
         open={newGameConfirmOpen}
