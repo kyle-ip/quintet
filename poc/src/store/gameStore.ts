@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   createInitialState,
+  DEFAULT_POOL_SIZE,
   placeFromPool,
   type SoloGameState,
 } from "@/engine/game";
@@ -84,16 +85,16 @@ if (typeof document !== "undefined") {
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  poolSize: 2,
-  state: createInitialState(2),
-  liveScore: withLiveScore(createInitialState(2)),
+  poolSize: DEFAULT_POOL_SIZE,
+  state: createInitialState(DEFAULT_POOL_SIZE),
+  liveScore: withLiveScore(createInitialState(DEFAULT_POOL_SIZE)),
   history: [],
   actionCount: 0,
   themeId: loadThemeId(),
   colorMode: loadColorMode(),
   dealSignal: 1,
   lastDealStartIndex: 0,
-  lastDealCount: 2,
+  lastDealCount: DEFAULT_POOL_SIZE,
   timerStartAt: null,
   timerStoppedAt: null,
 
