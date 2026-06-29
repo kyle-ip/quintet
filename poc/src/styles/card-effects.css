@@ -1,13 +1,4 @@
-/* Card drag & place feedback — respects prefers-reduced-motion */
-
-@keyframes cardDragPickup {
-  from {
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
-  }
-  to {
-    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.28));
-  }
-}
+/* Card place feedback — respects prefers-reduced-motion */
 
 @keyframes cardPlaceImpact {
   0% {
@@ -61,7 +52,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card-drag-wrapper,
   .playing-card--impact,
   .grid-cell-just-placed,
   .grid-cell-droppable:not(.grid-cell-over),
@@ -70,7 +60,6 @@
     animation: none !important;
   }
 
-  .card-drag-wrapper .playing-card,
   .grid-cell-over,
   .pool-card {
     transform: none !important;

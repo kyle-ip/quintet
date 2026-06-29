@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "./styles/sketch-ui.css";
 import "./styles/card-effects.css";
 import { installTestHelpers } from "./testHelpers";
 

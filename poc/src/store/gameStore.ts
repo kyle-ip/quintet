@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   createInitialState,
+  DEFAULT_POOL_SIZE,
   placeFromPool,
   type SoloGameState,
 } from "@/engine/game";
@@ -9,18 +10,9 @@ import { Grid } from "@/engine/grid";
 import { scoreGridLive, type ScoreSnapshot } from "@/engine/scoring";
 import {
   DEFAULT_THEME_ID,
-  THEME_STORAGE_KEY,
-  getCardTheme,
-  resolveThemeId,
+  applySketchTheme,
   type CardThemeId,
 } from "@themes/index";
-import {
-  applyColorMode,
-  COLOR_MODE_STORAGE_KEY,
-  DEFAULT_COLOR_MODE,
-  resolveColorMode,
-  type ColorMode,
-} from "@/config/colorMode";
 
 const MAX_UNDO = 25;
 
@@ -31,7 +23,6 @@ interface GameStore {
   history: SoloGameState[];
   actionCount: number;
   themeId: CardThemeId;
-  colorMode: ColorMode;
   dealSignal: number;
   lastDealStartIndex: number;
   lastDealCount: number;
@@ -43,8 +34,6 @@ interface GameStore {
   dropCard: (poolIndex: number, row: number, col: number) => void;
   undo: () => void;
   canUndo: () => boolean;
-  setThemeId: (id: CardThemeId) => void;
-  setColorMode: (mode: ColorMode) => void;
 }
 
 function computeDealDraw(
@@ -65,35 +54,20 @@ function withLiveScore(state: SoloGameState): ScoreSnapshot {
   return scoreGridLive(Grid.fromCells(state.gridCells));
 }
 
-function loadThemeId(): CardThemeId {
-  if (typeof localStorage === "undefined") {
-    return DEFAULT_THEME_ID;
-  }
-  return resolveThemeId(localStorage.getItem(THEME_STORAGE_KEY));
-}
-
-function loadColorMode(): ColorMode {
-  if (typeof localStorage === "undefined") {
-    return DEFAULT_COLOR_MODE;
-  }
-  return resolveColorMode(localStorage.getItem(COLOR_MODE_STORAGE_KEY));
-}
-
 if (typeof document !== "undefined") {
-  applyColorMode(loadColorMode());
+  applySketchTheme(DEFAULT_THEME_ID);
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  poolSize: 2,
-  state: createInitialState(2),
-  liveScore: withLiveScore(createInitialState(2)),
+  poolSize: DEFAULT_POOL_SIZE,
+  state: createInitialState(DEFAULT_POOL_SIZE),
+  liveScore: withLiveScore(createInitialState(DEFAULT_POOL_SIZE)),
   history: [],
   actionCount: 0,
-  themeId: loadThemeId(),
-  colorMode: loadColorMode(),
+  themeId: DEFAULT_THEME_ID,
   dealSignal: 1,
   lastDealStartIndex: 0,
-  lastDealCount: 2,
+  lastDealCount: DEFAULT_POOL_SIZE,
   timerStartAt: null,
   timerStoppedAt: null,
 
@@ -164,16 +138,4 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   canUndo: () => get().history.length > 0,
-
-  setThemeId: (id) => {
-    getCardTheme(id);
-    localStorage.setItem(THEME_STORAGE_KEY, id);
-    set({ themeId: id });
-  },
-
-  setColorMode: (mode) => {
-    localStorage.setItem(COLOR_MODE_STORAGE_KEY, mode);
-    applyColorMode(mode);
-    set({ colorMode: mode });
-  },
 }));

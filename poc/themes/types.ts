@@ -6,12 +6,7 @@ export interface CardFaceProps {
   className?: string;
 }
 
-export type CardThemeId =
-  | "letele-classic"
-  | "minimal-flat"
-  | "casino-luxe"
-  | "neo-brutalist"
-  | "typographic";
+export type CardThemeId = "sketch-paper";
 
 export interface CardThemeMeta {
   id: CardThemeId;

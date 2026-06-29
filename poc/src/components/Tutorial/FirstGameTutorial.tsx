@@ -45,10 +45,10 @@ export function FirstGameTutorial({ open, onClose }: FirstGameTutorialProps) {
       }
     >
       <ol className="tutorial-steps">
-        {STEPS.map((step, i) => (
+        {STEPS.map((step) => (
           <li key={step.title}>
             <strong>
-              {i + 1}. {step.title}
+              {step.title}
             </strong>
             <p>{step.body}</p>
           </li>

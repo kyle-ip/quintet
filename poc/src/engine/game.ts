@@ -7,6 +7,7 @@ export type GameStatus = "playing" | "finished";
 
 export const POOL_SIZE_MIN = 1;
 export const POOL_SIZE_MAX = 5;
+export const DEFAULT_POOL_SIZE = 5;
 export const POOL_SIZE_OPTIONS = [1, 2, 3, 4, 5] as const;
 
 export interface SoloGameState {

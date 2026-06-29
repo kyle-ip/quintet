@@ -1,11 +1,7 @@
-import type { ComponentType } from "react";
-import { LeteleClassic } from "./LeteleClassic";
-import { MinimalFlat } from "./MinimalFlat";
-import { CasinoLuxe } from "./CasinoLuxe";
-import { NeoBrutalist } from "./NeoBrutalist";
-import { Typographic } from "./Typographic";
+import { applySketchTheme } from "./applyTheme";
+import { SketchPaper } from "./Sketch";
 import { THEME_CONFIG } from "./config";
-import type { CardFaceProps, CardThemeId, CardThemeMeta } from "./types";
+import type { CardThemeId, CardThemeMeta } from "./types";
 
 export type { CardFaceProps, CardThemeId, CardThemeMeta } from "./types";
 export {
@@ -16,24 +12,19 @@ export {
   resolveThemeId,
   type ThemeConfigEntry,
 } from "./config";
+export { applySketchTheme };
 
-const FACES: Record<CardThemeId, ComponentType<CardFaceProps>> = {
-  "minimal-flat": MinimalFlat,
-  "letele-classic": LeteleClassic,
-  "casino-luxe": CasinoLuxe,
-  "neo-brutalist": NeoBrutalist,
-  typographic: Typographic,
+const meta: CardThemeMeta = {
+  ...THEME_CONFIG[0],
+  Component: SketchPaper,
 };
 
-export const CARD_THEMES: Record<CardThemeId, CardThemeMeta> = Object.fromEntries(
-  THEME_CONFIG.map((entry) => [
-    entry.id,
-    { ...entry, Component: FACES[entry.id] },
-  ]),
-) as Record<CardThemeId, CardThemeMeta>;
+export const CARD_THEMES: Record<CardThemeId, CardThemeMeta> = {
+  "sketch-paper": meta,
+};
 
-export const CARD_THEME_LIST = THEME_CONFIG.map((entry) => CARD_THEMES[entry.id]);
+export const CARD_THEME_LIST = [meta];
 
-export function getCardTheme(id: CardThemeId): CardThemeMeta {
-  return CARD_THEMES[id];
+export function getCardTheme(_id: CardThemeId = "sketch-paper"): CardThemeMeta {
+  return meta;
 }

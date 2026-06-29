@@ -1,43 +1,21 @@
-# Card Themes
+# Sketch theme
 
-Pluggable card face themes for the Quintet PoC. All themes use a **5:7 aspect ratio** and scale with their container (grid cells and pool cards share the same `--cell-size`).
+The PoC uses a single hand-drawn **Kraft Paper** card face (`sketch-paper`) on a white page background.
 
-## Choose a theme
-
-### Option A — config file (default on first load)
-
-Edit [`config.ts`](config.ts):
-
-```typescript
-export const DEFAULT_THEME_ID: CardThemeId = "minimal-flat";
-```
-
-### Option B — in-game dropdown
-
-Use the **Theme** selector in the left **Options** panel. Your choice is saved to `localStorage` (`quintet-theme`).
-
-## Available themes
-
-| ID | Name | Notes |
-|----|------|-------|
-| `minimal-flat` | Minimal Flat | Pure CSS, smallest bundle (**default**) |
-| `letele-classic` | Letele Classic | @letele/playing-cards SVG (CC0) |
-| `casino-luxe` | Casino Luxe | Gold frame, cream face |
-| `neo-brutalist` | Neo Brutalist | Bold outline + hard shadow |
-| `typographic` | Typographic | Large rank typography |
-
-## Layout
+## Files
 
 ```
 themes/
-  config.ts          # DEFAULT_THEME_ID + THEME_CONFIG catalog
-  index.ts           # registry + getCardTheme()
-  types.ts
-  deckKey.ts         # rank/suit → @letele export names
-  LeteleClassic.tsx
-  MinimalFlat.tsx
-  …
-  styles/            # per-theme CSS
+  Sketch.tsx           # Card face component
+  styles/sketch.css    # Card face styles
+  config.ts            # DEFAULT_THEME_ID = "sketch-paper"
+  applyTheme.ts        # Sets data-sketch-theme on <html>
 ```
 
-To add a theme: implement a `CardFace` component, register it in `index.ts` `FACES`, and add an entry to `THEME_CONFIG` in `config.ts`.
+UI tokens live in `src/styles/sketch-ui.css`.
+
+Legacy theme files (`MinimalFlat`, `LeteleClassic`, etc.) remain on disk but are not registered.
+
+## Layout
+
+Cards use a **5:7 aspect ratio** and scale with `--cell-size` (grid and pool).

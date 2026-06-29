@@ -77,20 +77,9 @@ Manual smoke test before release:
 | Undo / New game tappable | | |
 | Complete 25 placements without layout break | | |
 
-## Card themes
+## Card theme
 
-See [`themes/README.md`](themes/README.md).
-
-- Default: edit [`themes/config.ts`](themes/config.ts) → `DEFAULT_THEME_ID`
-- In-game **Theme** dropdown → `localStorage` key `quintet-theme`
-
-| ID | Style |
-|----|--------|
-| `minimal-flat` | CSS flat (**default**) |
-| `letele-classic` | SVG deck (@letele, CC0) |
-| `casino-luxe` | Gold / cream casino |
-| `neo-brutalist` | Bold outline |
-| `typographic` | Large rank type |
+Single hand-drawn **Kraft Paper** style (`sketch-paper`). See [`themes/README.md`](themes/README.md).
 
 ## Architecture
 
@@ -100,7 +89,7 @@ poc/
     engine/          # Pure TS rules (no React) — port of prototype
     store/           # Zustand gameStore
     components/      # Board, Pool, Card, Modal, ScoringRules, GameSummary, Tutorial, LinesPanel
-    config/          # colorMode, scoringRules display copy
+    config/          # scoringRules display copy
   e2e/               # Playwright tests
   themes/            # Pluggable card face themes
 ```
@@ -127,8 +116,6 @@ Engine unit tests + golden fixtures (`../fixtures/golden-scores.json`) for TS �
 
 | Key | Purpose |
 |-----|---------|
-| `quintet-theme` | Selected card theme id |
-| `quintet-color-mode` | `light` or `dark` |
 | `quintet-tutorial-seen` | Skip first-visit tutorial when set |
 
 ## Related docs

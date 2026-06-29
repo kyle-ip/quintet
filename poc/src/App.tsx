@@ -16,8 +16,6 @@ import { useGameStore } from "@/store/gameStore";
 import type { Card } from "@/engine/card";
 import { canDropOnCell, legalCellKeys, POOL_SIZE_OPTIONS } from "@/engine/game";
 import { parseCellKey } from "@/engine/grid";
-import { CARD_THEME_LIST } from "@themes/index";
-import type { ColorMode } from "@/config/colorMode";
 import { ScoringRulesModal } from "@/components/ScoringRules/ScoringRulesModal";
 import { NewGameConfirmModal } from "@/components/NewGameConfirm/NewGameConfirmModal";
 import { GameSummaryModal } from "@/components/GameSummary/GameSummaryModal";
@@ -31,14 +29,10 @@ export default function App() {
   const state = useGameStore((s) => s.state);
   const liveScore = useGameStore((s) => s.liveScore);
   const actionCount = useGameStore((s) => s.actionCount);
-  const themeId = useGameStore((s) => s.themeId);
-  const colorMode = useGameStore((s) => s.colorMode);
   const initGame = useGameStore((s) => s.initGame);
   const dropCard = useGameStore((s) => s.dropCard);
   const undo = useGameStore((s) => s.undo);
   const canUndo = useGameStore((s) => s.canUndo);
-  const setThemeId = useGameStore((s) => s.setThemeId);
-  const setColorMode = useGameStore((s) => s.setColorMode);
   const timerStartAt = useGameStore((s) => s.timerStartAt);
   const timerStoppedAt = useGameStore((s) => s.timerStoppedAt);
   const playTimerLabel = usePlayTimerDisplay();
@@ -164,26 +158,6 @@ export default function App() {
                     ))}
                   </select>
                 </label>
-                <label className="sidebar-field">
-                  <span className="sidebar-label">Theme</span>
-                  <select value={themeId} onChange={(e) => setThemeId(e.target.value as typeof themeId)}>
-                    {CARD_THEME_LIST.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="sidebar-field">
-                  <span className="sidebar-label">Mode</span>
-                  <select
-                    value={colorMode}
-                    onChange={(e) => setColorMode(e.target.value as ColorMode)}
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </label>
               </div>
 
               <div className="sidebar-section">
@@ -256,7 +230,7 @@ export default function App() {
         <DragOverlay dropAnimation={null}>
           {activeCard ? (
             <div className="card-drag-wrapper">
-              <PlayingCard card={activeCard} variant="drag" className="card-dragging" />
+              <PlayingCard card={activeCard} variant="drag" />
             </div>
           ) : null}
         </DragOverlay>
