@@ -1,0 +1,107 @@
+.deck-stack {
+  position: relative;
+  width: var(--cell-size);
+  flex-shrink: 0;
+}
+
+.deck-stack-pile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+}
+
+.deck-stack-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  transform: translate(calc(var(--layer) * 2px), calc(var(--layer) * -2px));
+  transition:
+    transform 0.28s cubic-bezier(0.34, 1.1, 0.64, 1),
+    opacity 0.2s ease;
+}
+
+.deck-stack--drawing .deck-stack-card {
+  animation: deckDrawShift 0.42s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+.deck-stack--drawing .deck-stack-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.deck-stack--drawing .deck-stack-card:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.deck-stack--drawing .deck-stack-card:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.deck-stack--drawing .deck-stack-card:nth-child(4) {
+  animation-delay: 105ms;
+}
+
+.deck-stack-count {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 1.35rem;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  text-align: center;
+  color: #ecfdf5;
+  background: var(--color-accent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 70%, #000);
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.deck-stack--drawing .deck-stack-count {
+  animation: deckCountPop 0.35s ease;
+}
+
+.deck-stack--empty .deck-stack-pile {
+  opacity: 0.35;
+}
+
+.deck-stack--empty .deck-stack-count {
+  background: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+@keyframes deckDrawShift {
+  0% {
+    transform: translate(calc(var(--layer) * 2px), calc(var(--layer) * -2px));
+  }
+  35% {
+    transform: translate(calc(var(--layer) * 2px + 6px), calc(var(--layer) * -2px - 10px)) scale(0.96);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(calc(var(--layer) * 2px), calc(var(--layer) * -2px));
+    opacity: 1;
+  }
+}
+
+@keyframes deckCountPop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-stack--drawing .deck-stack-card,
+  .deck-stack--drawing .deck-stack-count {
+    animation: none;
+  }
+}

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quintet — icon options</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 2rem 1.5rem 3rem;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #f0f2f5;
+        color: #1a1d23;
+      }
+      h1 { margin: 0 0 0.35rem; font-size: 1.5rem; }
+      p.lead { margin: 0 0 2rem; color: #5f6570; max-width: 52rem; line-height: 1.5; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d0d4dc;
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .card:hover { border-color: #2d6a4f; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+      .card h2 { margin: 0; font-size: 1rem; }
+      .card .tag { margin: 0.35rem 0 0; font-size: 0.8rem; color: #5f6570; line-height: 1.4; }
+      .sizes {
+        display: flex;
+        align-items: flex-end;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .size-block { text-align: center; }
+      .size-block span {
+        display: block;
+        font-size: 0.7rem;
+        color: #5f6570;
+        margin-top: 0.35rem;
+      }
+      .tab { width: 32px; height: 32px; border-radius: 6px; }
+      .app { width: 128px; height: 128px; border-radius: 24px; }
+      code { font-size: 0.72rem; background: #eef0f4; padding: 0.15rem 0.4rem; border-radius: 4px; }
+      .current { border-color: #f87171; background: #fef2f2; }
+    </style>
+  </head>
+  <body>
+    <h1>Quintet icon options</h1>
+    <p class="lead">
+      Compare tab size (32px) and shortcut size (128px). Reply with a letter <strong>A–F</strong> (or mix ideas from several).
+      Open via dev server: <code>http://localhost:5173/icon-preview.html</code>
+    </p>
+    <div class="grid">
+      <article class="card current">
+        <h2>Current</h2>
+        <p class="tag">Gray tray + 5×5 cells + spade (previous)</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./favicon.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icon.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>public/icon.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>A — Minimal grid</h2>
+        <p class="tag">Dark green, light grid lines, plus-shaped cards. Reads well small.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-a-grid.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-a-grid.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-a-grid.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>B — Playing card</h2>
+        <p class="tag">Tilted ace of spades on green gradient. Classic poker.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-b-card.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-b-card.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-b-card.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>C — Letter Q</h2>
+        <p class="tag">Monogram ring + five pips. Dark, modern app icon.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-c-letter.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-c-letter.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-c-letter.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>D — Gold diamond</h2>
+        <p class="tag">Diamond suit gem, gold on deep green. Premium / casino.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-d-gem.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-d-gem.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-d-gem.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>E — Neo-brutalist</h2>
+        <p class="tag">Lime, thick black strokes, central “5”. Matches neo-brutalist theme.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-e-neo.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-e-neo.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-e-neo.svg</code>
+      </article>
+
+      <article class="card">
+        <h2>F — Felt table</h2>
+        <p class="tag">Card fan on oval felt. Most decorative; busier at 32px.</p>
+        <div class="sizes">
+          <div class="size-block"><img class="tab" src="./icons/option-f-felt.svg" alt="" /><span>tab</span></div>
+          <div class="size-block"><img class="app" src="./icons/option-f-felt.svg" alt="" /><span>shortcut</span></div>
+        </div>
+        <code>option-f-felt.svg</code>
+      </article>
+    </div>
+  </body>
+</html>

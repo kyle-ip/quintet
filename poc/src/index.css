@@ -1,0 +1,111 @@
+/* Light mode (default) */
+:root,
+[data-color-mode="light"] {
+  color-scheme: light;
+  --color-bg: #f0f2f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #e8eaed;
+  --color-text: #1a1d23;
+  --color-text-muted: #5f6570;
+  --color-border: #d0d4dc;
+  --color-border-strong: #b8bec8;
+  --color-accent: #2d6a4f;
+  --color-accent-text: #1b4332;
+  --color-score: #2d6a4f;
+  --color-grid-bg: #e2e6ed;
+  --color-grid-border: #c5cad4;
+  --color-cell-bg: #f8f9fb;
+  --color-cell-filled: #ffffff;
+  --color-cell-droppable: #dbeafe;
+  --color-cell-over: #dcfce7;
+  --color-cell-droppable-border: #3b82f6;
+  --color-cell-over-border: #22c55e;
+  --color-btn-bg: #ffffff;
+  --color-btn-border: #c5cad4;
+  --color-btn-hover: #eef0f4;
+  --color-btn-danger-bg: #fef2f2;
+  --color-btn-danger-border: #f87171;
+  --color-btn-danger-text: #b91c1c;
+  --color-game-over-bg: #ecfdf5;
+  --color-game-over-text: #166534;
+  --cell-size: clamp(52px, 11vw, 76px);
+  --grid-gap: clamp(4px, 1vw, 8px);
+  --grid-pad: clamp(6px, 1.2vw, 10px);
+  --play-gap: clamp(0.75rem, 2vw, 1.25rem);
+  --pool-card-height: calc(var(--cell-size) * 7 / 5);
+  --pool-stack-peek: calc(var(--pool-card-height) / 3);
+  --pool-station-width: calc(var(--cell-size) * 2 + var(--play-gap) + 1.1rem);
+  --color-pool-tray: #e8f5ef;
+  --color-pool-tray-border: #9fd4b8;
+}
+
+[data-color-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: #1a1d23;
+  --color-surface: #252932;
+  --color-surface-muted: #2e3440;
+  --color-text: #eceff4;
+  --color-text-muted: #aeb7c4;
+  --color-border: #3b4252;
+  --color-border-strong: #4c566a;
+  --color-accent: #a3be8c;
+  --color-accent-text: #a3be8c;
+  --color-score: #a3be8c;
+  --color-grid-bg: #252932;
+  --color-grid-border: #3b4252;
+  --color-cell-bg: #1e2229;
+  --color-cell-filled: #2e3440;
+  --color-cell-droppable: #1e2836;
+  --color-cell-over: #243024;
+  --color-cell-droppable-border: #5e81ac;
+  --color-cell-over-border: #a3be8c;
+  --color-btn-bg: #2e3440;
+  --color-btn-border: #4c566a;
+  --color-btn-hover: #3b4252;
+  --color-btn-danger-bg: #3d1f1f;
+  --color-btn-danger-border: #ef4444;
+  --color-btn-danger-text: #fca5a5;
+  --color-game-over-bg: #2e3440;
+  --color-game-over-text: #a3be8c;
+  --color-pool-tray: #1e2a24;
+  --color-pool-tray-border: #3d6a52;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-touch-callout: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+select {
+  font: inherit;
+  color: var(--color-text);
+}
+
+select {
+  background: var(--color-btn-bg);
+  border: 1px solid var(--color-btn-border);
+  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --cell-size: clamp(44px, 12vw, 60px);
+  }
+}

@@ -1,0 +1,78 @@
+/* Card drag & place feedback — respects prefers-reduced-motion */
+
+@keyframes cardDragPickup {
+  from {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+  }
+  to {
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.28));
+  }
+}
+
+@keyframes cardPlaceImpact {
+  0% {
+    transform: scale(1.14) translateY(-10%);
+  }
+  38% {
+    transform: scale(0.9) translateY(3%);
+  }
+  62% {
+    transform: scale(1.04) translateY(-1%);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cellPlaceFlash {
+  0% {
+    box-shadow:
+      inset 0 0 0 2px var(--color-cell-over-border),
+      0 0 0 3px color-mix(in srgb, var(--color-cell-over-border) 35%, transparent);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+@keyframes droppablePulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--color-cell-droppable-border) 0%, transparent);
+  }
+  50% {
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-cell-droppable-border) 45%, transparent);
+  }
+}
+
+@keyframes poolCardDealt {
+  0% {
+    transform: scale(0.88);
+    opacity: 0.6;
+  }
+  55% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-drag-wrapper,
+  .playing-card--impact,
+  .grid-cell-just-placed,
+  .grid-cell-droppable:not(.grid-cell-over),
+  .pool-card--dealt,
+  .deck-stack--drawing .deck-stack-card {
+    animation: none !important;
+  }
+
+  .card-drag-wrapper .playing-card,
+  .grid-cell-over,
+  .pool-card {
+    transform: none !important;
+  }
+}

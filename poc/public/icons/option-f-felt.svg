@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="feltF" cx="0.5" cy="0.45" r="0.55">
+      <stop stop-color="#15803d"/>
+      <stop stop-color="#052e16"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#1c1917"/>
+  <ellipse cx="256" cy="268" rx="188" ry="148" fill="url(#feltF)" stroke="#ca8a04" stroke-width="8"/>
+  <g transform="translate(256 250)">
+    <g transform="rotate(-18) translate(-50 0)">
+      <rect x="-44" y="-72" width="88" height="124" rx="8" fill="#fff" stroke="#d6d3d1" stroke-width="3"/>
+    </g>
+    <g transform="rotate(0)">
+      <rect x="-44" y="-72" width="88" height="124" rx="8" fill="#fff" stroke="#d6d3d1" stroke-width="3"/>
+      <path fill="#b91c1c" d="M0 10c-10 10-18 18-18 30 0 12 8 18 18 18s18-6 18-18c0-12-8-20-18-30z"/>
+    </g>
+    <g transform="rotate(18) translate(50 0)">
+      <rect x="-44" y="-72" width="88" height="124" rx="8" fill="#fff" stroke="#d6d3d1" stroke-width="3"/>
+    </g>
+  </g>
+  <text x="256" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="36" font-weight="700" letter-spacing="6" fill="#fef3c7">QUINTET</text>
+</svg>

@@ -1,0 +1,49 @@
+.pool-deal-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 900;
+}
+
+.pool-deal-fly {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  animation: poolDealFly 0.48s cubic-bezier(0.22, 0.85, 0.32, 1) forwards;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.22));
+}
+
+.pool-deal-fly .playing-card {
+  animation: poolDealFlip 0.48s cubic-bezier(0.22, 0.85, 0.32, 1) forwards;
+}
+
+@keyframes poolDealFly {
+  0% {
+    transform: translate(-50%, -50%) scale(0.72) rotate(-6deg);
+    opacity: 0.35;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--deal-dx)), calc(-50% + var(--deal-dy))) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes poolDealFlip {
+  0% {
+    transform: perspective(400px) rotateY(88deg);
+  }
+  45% {
+    transform: perspective(400px) rotateY(12deg);
+  }
+  100% {
+    transform: perspective(400px) rotateY(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-deal-layer {
+    display: none;
+  }
+}

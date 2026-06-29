@@ -1,0 +1,283 @@
+.app {
+  padding: 1rem 1.25rem 2rem;
+}
+
+/* Shared 3-column width: sidebar | board | pool */
+.game-layout {
+  --sidebar-width: clamp(128px, 16vw, 168px);
+  display: grid;
+  grid-template-columns: var(--sidebar-width) auto var(--pool-station-width);
+  column-gap: var(--play-gap);
+  row-gap: 1.25rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.sidebar-column {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: var(--sidebar-width);
+  min-height: 100%;
+}
+
+.game-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.scoring-rules-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 6px;
+  background: var(--color-btn-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.scoring-rules-btn:hover {
+  background: var(--color-btn-hover);
+}
+
+.view-results-btn {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-game-over-bg);
+  color: var(--color-game-over-text);
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+}
+
+.view-results-btn:hover {
+  filter: brightness(0.97);
+}
+
+.app-topbar {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) auto var(--pool-station-width);
+  column-gap: var(--play-gap);
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-topbar h1 {
+  grid-column: 1;
+  margin: 0;
+  font-size: 1.875rem;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.topbar-actions {
+  grid-column: 2 / -1;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.app-topbar button {
+  padding: 0.22rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 5px;
+  background: var(--color-btn-bg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.app-topbar button:hover:not(:disabled) {
+  background: var(--color-btn-hover);
+}
+
+.app-topbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-new-game {
+  border-color: var(--color-btn-danger-border) !important;
+  background: var(--color-btn-danger-bg) !important;
+  color: var(--color-btn-danger-text) !important;
+  font-weight: 600;
+}
+
+.btn-new-game:hover {
+  filter: brightness(0.96);
+}
+
+.game-layout > .board {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.game-layout > .pool-column {
+  grid-column: 3;
+  justify-self: start;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sidebar-heading {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.sidebar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.sidebar-label {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.sidebar-field select {
+  width: 100%;
+}
+
+.sidebar-stats {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.stat-row dt {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-weight: normal;
+}
+
+.stat-row dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-row-score dd {
+  color: var(--color-score);
+  font-size: 1.05rem;
+}
+
+.game-over {
+  grid-column: 1 / -1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--color-game-over-bg);
+  text-align: center;
+  color: var(--color-game-over-text);
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+}
+
+.card-drag-wrapper {
+  width: var(--cell-size);
+  aspect-ratio: 5 / 7;
+  animation: cardDragPickup 0.16s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
+  cursor: grabbing;
+}
+
+.card-drag-wrapper .playing-card {
+  width: 100%;
+  transform: rotate(-2.5deg) scale(1.05);
+  transform-origin: center bottom;
+}
+
+.card-dragging {
+  filter: brightness(1.03);
+}
+
+[data-color-mode="dark"] .card-drag-wrapper {
+  animation-name: cardDragPickup;
+}
+
+@media (max-width: 640px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .app-topbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .app-topbar h1 {
+    grid-column: 1;
+  }
+
+  .topbar-actions {
+    grid-column: 2;
+  }
+
+  .sidebar-column {
+    grid-column: 1;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .game-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
+
+  .game-layout > .board {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .game-layout > .pool-column {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .sidebar-section {
+    flex: 1 1 140px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-topbar h1 {
+    font-size: 1.5rem;
+  }
+
+  .app-topbar button {
+    padding: 0.2rem 0.42rem;
+    font-size: 0.72rem;
+  }
+}
