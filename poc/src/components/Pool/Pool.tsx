@@ -29,7 +29,7 @@ function DraggablePoolCard({
   selected: boolean;
   onSelect: (index: number) => void;
 }) {
-  const dragDisabled = disabled || tapPlaceMode;
+  const dragDisabled = disabled;
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `pool-${index}`,
     disabled: dragDisabled,
@@ -54,10 +54,10 @@ function DraggablePoolCard({
       ]
         .filter(Boolean)
         .join(" ")}
-      {...(tapPlaceMode ? {} : listeners)}
-      {...(tapPlaceMode ? {} : attributes)}
+      {...listeners}
+      {...attributes}
       onClick={
-        tapPlaceMode && !disabled
+        tapPlaceMode && !disabled && !isDragging
           ? (e) => {
               e.stopPropagation();
               onSelect(index);
@@ -98,7 +98,7 @@ export function Pool({
       <section className="pool-station" aria-label="Deck and card pool" data-testid="card-pool">
         <header className="pool-station-header">
           <span className="pool-station-title">
-            {placementHint ?? (tapPlaceMode ? "Tap a card" : "Pick a card")}
+            {placementHint ?? (tapPlaceMode ? "Drag or tap a card" : "Pick a card")}
           </span>
           <span className="pool-station-meta" aria-label={`${pool.length} of ${poolSize} in pool`}>
             {pool.length}/{poolSize}

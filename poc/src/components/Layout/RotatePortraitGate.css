@@ -2,7 +2,8 @@
   display: none;
 }
 
-@media (max-width: 900px) and (orientation: portrait) {
+@media (orientation: portrait) and (max-height: 520px),
+  ((hover: none) and (pointer: coarse) and (orientation: portrait)) {
   .rotate-portrait-gate {
     display: flex;
     position: fixed;

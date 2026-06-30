@@ -45,6 +45,10 @@
   display: contents;
 }
 
+.play-cluster {
+  display: contents;
+}
+
 .game-sidebar {
   display: flex;
   flex-direction: column;
@@ -259,7 +263,7 @@
 }
 
 .card-drag-wrapper {
-  width: var(--cell-size);
+  width: calc(var(--cell-size) * var(--drag-card-scale, 0.94));
   aspect-ratio: 5 / 7;
   animation: cardDragPickup 0.16s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
   cursor: grabbing;
@@ -267,312 +271,461 @@
 
 .card-drag-wrapper .playing-card {
   width: 100%;
-  transform: rotate(-2.5deg) scale(1.05);
+  transform: rotate(-2.5deg) scale(var(--drag-card-inner-scale, 1));
   transform-origin: center bottom;
+}
+
+.drag-overlay--touch .card-drag-wrapper {
+  --drag-card-scale: 0.82;
+  --drag-card-inner-scale: 0.98;
 }
 
 .card-dragging {
   filter: brightness(1.03);
 }
 
-/* ── Mobile landscape only ── */
-@media (max-width: 900px) and (orientation: landscape) {
-  .app {
-    padding: 0;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  .game-layout {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100dvh;
-    max-height: 100dvh;
-    gap: 0;
-    margin: 0;
-    overflow: hidden;
-  }
-
-  .app-topbar {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.35rem;
-    padding: 0.2rem 0.45rem;
-    padding-left: max(0.45rem, env(safe-area-inset-left, 0));
-    padding-right: max(0.45rem, env(safe-area-inset-right, 0));
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg);
-  }
-
-  .topbar-brand {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .app-topbar h1 {
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-  }
-
-  .topbar-center {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.35rem;
-    min-width: 0;
-  }
-
-  .mobile-stats-bar {
-    display: flex;
-    flex: 1;
-    flex-wrap: nowrap;
-    gap: 0.2rem;
-    min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding: 0 0.15rem;
-  }
-
-  .mobile-stats-bar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .mobile-stat {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 0.2rem;
-    padding: 0.12rem 0.35rem;
-    border-radius: 5px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    flex-shrink: 0;
-    min-width: 0;
-  }
-
-  .mobile-stat-primary {
-    background: color-mix(in srgb, var(--color-score) 10%, var(--color-surface));
-    border-color: color-mix(in srgb, var(--color-score) 30%, var(--color-border));
-  }
-
-  .mobile-stat-label {
-    font-size: 0.52rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-  }
-
-  .mobile-stat-value {
-    font-size: 0.68rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .mobile-stat-primary .mobile-stat-value {
-    color: var(--color-score);
-  }
-
-  .topbar-endless {
-    display: none;
-  }
-
-  .btn-settings-mobile {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2rem;
-    min-height: 2rem;
-    padding: 0;
-    font-size: 1rem;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-
-  .app-topbar button {
-    min-height: 2rem;
-    padding: 0.2rem 0.45rem;
-    font-size: 0.68rem;
-    flex-shrink: 0;
-  }
-
-  .btn-new-game {
-    padding-inline: 0.4rem;
-  }
-
-  .floor-banner {
-    flex-shrink: 0;
-    margin: 0;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.65rem;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-
-  .floor-banner-content {
-    gap: 0.2rem 0.35rem;
-  }
-
-  .floor-banner-meta,
-  .floor-banner-boss {
-    flex-basis: auto;
-    font-size: 0.62rem;
-  }
-
-  .play-stage {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0.35rem;
-    min-height: 0;
-    padding: 0.25rem 0.35rem;
-    padding-left: max(0.35rem, env(safe-area-inset-left, 0));
-    padding-right: max(0.35rem, env(safe-area-inset-right, 0));
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-  }
-
-  .play-main {
-    flex: 1 1 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
-    min-height: 0;
-    overflow: visible;
-    position: relative;
-    z-index: 2;
-  }
-
-  .play-bottom {
-    flex: 0 0 var(--pool-station-width);
-    width: var(--pool-station-width);
-    max-width: var(--pool-station-width);
-    min-width: 0;
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-    contain: layout paint;
-  }
-
-  .sidebar-column {
-    position: fixed;
-    inset: auto 0 0 0;
-    z-index: 60;
-    width: 100%;
-    max-height: min(92dvh, 520px);
-    transform: translateY(100%);
-    visibility: hidden;
-    transition:
-      transform 0.28s cubic-bezier(0.32, 0.72, 0, 1),
-      visibility 0.28s;
-    pointer-events: none;
-  }
-
-  .sidebar-column.settings-open {
-    transform: translateY(0);
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .game-sidebar {
-    max-height: min(92dvh, 520px);
-    overflow-y: auto;
-    padding: 0 0.85rem 1rem;
-    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0));
-    background: var(--color-surface);
-    border-radius: 12px 12px 0 0;
-    border: 1px solid var(--color-border);
-    border-bottom: none;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.16);
-  }
-
-  .settings-sheet-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    padding: 0.65rem 0 0.5rem;
-    margin-bottom: 0.15rem;
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .settings-sheet-header h2 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 700;
-  }
-
-  .settings-close-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid var(--color-btn-border);
-    border-radius: 999px;
-    background: var(--color-btn-bg);
-    font-size: 1.2rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .settings-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 55;
-    border: none;
-    background: rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    animation: fadeIn 0.2s ease;
-  }
-
-  .sidebar-field select {
-    min-height: 2.25rem;
-    font-size: 0.9rem;
-  }
-
-  .how-to-play-btn,
-  .view-results-btn {
-    min-height: 2.25rem;
-    font-size: 0.78rem;
-  }
+/* ── Mobile landscape (driven by data-mobile-landscape from JS) ── */
+.game-layout[data-mobile-landscape] {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: unset;
+  grid-template-areas: unset;
+  width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  gap: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
-@media (max-width: 900px) and (orientation: landscape) and (max-height: 320px) {
-  .app-topbar h1 {
-    display: none;
-  }
+.app:has(.game-layout[data-mobile-landscape]) {
+  padding: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-  .mobile-stat-label {
-    display: none;
-  }
+html:has(.game-layout[data-mobile-landscape]),
+html:has(.game-layout[data-mobile-landscape]) body,
+html:has(.game-layout[data-mobile-landscape]) #root {
+  height: 100dvh;
+  overflow: hidden;
+}
 
-  .mobile-stat {
-    padding: 0.1rem 0.28rem;
-  }
+.game-layout[data-mobile-landscape] .app-topbar {
+  flex-shrink: 0;
+  display: flex;
+  grid-template-columns: unset;
+  column-gap: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.2rem 0.45rem;
+  padding-left: max(0.55rem, env(safe-area-inset-left, 0));
+  padding-right: max(0.55rem, env(safe-area-inset-right, 0));
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
 
-  .floor-banner {
-    padding: 0.15rem 0.4rem;
-    font-size: 0.58rem;
-  }
+.game-layout[data-mobile-landscape] .topbar-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .app-topbar h1 {
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  grid-column: unset;
+}
+
+.game-layout[data-mobile-landscape] .topbar-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+  grid-column: unset;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stats-bar {
+  display: flex;
+  flex: 1;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 0.15rem;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stats-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stat {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.2rem;
+  padding: 0.12rem 0.35rem;
+  border-radius: 5px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stat-primary {
+  background: color-mix(in srgb, var(--color-score) 10%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-score) 30%, var(--color-border));
+}
+
+.game-layout[data-mobile-landscape] .mobile-stat-label {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.game-layout[data-mobile-landscape] .mobile-stat-value {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stat-primary .mobile-stat-value {
+  color: var(--color-score);
+}
+
+.game-layout[data-mobile-landscape] .topbar-endless {
+  display: none;
+}
+
+.game-layout[data-mobile-landscape] .btn-settings-mobile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .app-topbar button {
+  min-height: 2rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .btn-new-game {
+  padding-inline: 0.4rem;
+}
+
+.game-layout[data-mobile-landscape] .floor-banner {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  grid-area: unset;
+}
+
+.game-layout[data-mobile-landscape] .floor-banner-content {
+  gap: 0.2rem 0.35rem;
+}
+
+.game-layout[data-mobile-landscape] .floor-banner-meta,
+.game-layout[data-mobile-landscape] .floor-banner-boss {
+  flex-basis: auto;
+  font-size: 0.62rem;
+}
+
+.game-layout[data-mobile-landscape] .play-stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  order: 1;
+  min-height: 0;
+  min-width: 0;
+  padding: var(--play-stage-pad-y, 0.35rem)
+    max(var(--play-stage-pad-x, 1rem), env(safe-area-inset-left, 0), env(safe-area-inset-right, 0));
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.game-layout[data-mobile-landscape] .play-cluster {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--board-pool-gap, 10px);
+  flex-shrink: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.game-layout[data-mobile-landscape] .play-main {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  grid-area: unset;
+}
+
+.game-layout[data-mobile-landscape] .play-bottom {
+  flex: 0 0 auto;
+  width: var(--pool-station-width);
+  max-width: var(--pool-station-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  contain: layout paint;
+  grid-area: unset;
+  align-self: unset;
+}
+
+/* Sidebar: centered compact modal — not full-width sheet */
+.game-layout[data-mobile-landscape] .sidebar-column {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: auto;
+  max-height: none;
+  padding: max(0.65rem, env(safe-area-inset-top, 0)) max(1rem, env(safe-area-inset-right, 0))
+    max(0.65rem, env(safe-area-inset-bottom, 0)) max(1rem, env(safe-area-inset-left, 0));
+  overflow-y: auto;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.22s ease,
+    visibility 0.22s;
+  pointer-events: none;
+  order: 99;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-column.settings-open {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-column.settings-open > * {
+  pointer-events: auto;
+}
+
+.game-layout[data-mobile-landscape] .game-sidebar {
+  width: min(19.5rem, 100%);
+  max-width: 19.5rem;
+  max-height: min(76dvh, 360px);
+  overflow-y: auto;
+  padding: 0 0.85rem 0.75rem;
+  background: var(--color-surface);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .settings-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.6rem 0 0.45rem;
+  margin-bottom: 0.1rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.game-layout[data-mobile-landscape] .settings-sheet-header h2 {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.game-layout[data-mobile-landscape] .settings-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 999px;
+  background: var(--color-btn-bg);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.game-layout[data-mobile-landscape] .settings-backdrop {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  animation: fadeIn 0.2s ease;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-section {
+  gap: 0.4rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-heading {
+  font-size: 0.68rem;
+  margin-bottom: 0.05rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-field:not(.sidebar-field-checkbox) {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  font-size: 0.8rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-label {
+  flex: 0 0 auto;
+  min-width: 4rem;
+  font-size: 0.72rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-field select {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 9rem;
+  min-height: 2rem;
+  font-size: 0.8rem;
+  padding: 0.12rem 0.3rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-field-checkbox {
+  padding-top: 0.1rem;
+}
+
+.game-layout[data-mobile-landscape] .sidebar-stats {
+  gap: 0.35rem;
+}
+
+.game-layout[data-mobile-landscape] .stat-row {
+  font-size: 0.8rem;
+}
+
+.game-layout[data-mobile-landscape] .stat-row-score dd {
+  font-size: 0.92rem;
+}
+
+.game-layout[data-mobile-landscape] .how-to-play-btn,
+.game-layout[data-mobile-landscape] .view-results-btn {
+  width: min(19.5rem, 100%);
+  max-width: 19.5rem;
+  min-height: 2rem;
+  font-size: 0.76rem;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape][data-short-landscape] .app-topbar h1 {
+  display: none;
+}
+
+.game-layout[data-mobile-landscape][data-short-landscape] .mobile-stat-label {
+  display: none;
+}
+
+.game-layout[data-mobile-landscape][data-short-landscape] .mobile-stat {
+  padding: 0.1rem 0.28rem;
+}
+
+.game-layout[data-mobile-landscape][data-short-landscape] .floor-banner {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.58rem;
+}
+
+/* ── Tablet landscape (iPad Pro etc.) — scale up touch UI ── */
+.game-layout[data-tablet-landscape] .app-topbar {
+  padding: 0.45rem 0.85rem;
+  padding-left: max(0.85rem, env(safe-area-inset-left, 0));
+  padding-right: max(0.85rem, env(safe-area-inset-right, 0));
+}
+
+.game-layout[data-tablet-landscape] .app-topbar h1 {
+  font-size: 1.35rem;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stat {
+  padding: 0.2rem 0.55rem;
+  border-radius: 7px;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stat-label {
+  font-size: 0.62rem;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stat-value {
+  font-size: 0.82rem;
+}
+
+.game-layout[data-tablet-landscape] .app-topbar button {
+  min-height: 2.35rem;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.game-layout[data-tablet-landscape] .btn-settings-mobile {
+  min-width: 2.35rem;
+  min-height: 2.35rem;
+  font-size: 1.15rem;
+}
+
+.game-layout[data-tablet-landscape] .play-stage {
+  padding: var(--play-stage-pad-y, 0.75rem) var(--play-stage-pad-x, 2.5rem);
+}
+
+.game-layout[data-tablet-landscape] .game-sidebar {
+  width: min(22rem, 100%);
+  max-width: 22rem;
+}
+
+.game-layout[data-tablet-landscape] .play-bottom {
+  overflow: visible;
+  contain: none;
+}
+
+.game-layout[data-tablet-landscape] .how-to-play-btn,
+.game-layout[data-tablet-landscape] .view-results-btn {
+  width: min(22rem, 100%);
+  max-width: 22rem;
+  min-height: 2.35rem;
+  font-size: 0.85rem;
 }
 
 @keyframes fadeIn {

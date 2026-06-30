@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
-
-const MOBILE_LANDSCAPE = "(max-width: 900px) and (orientation: landscape)";
+import { MOBILE_LANDSCAPE_QUERY, TABLET_LANDSCAPE_MIN_HEIGHT } from "./mobileLandscape";
 
 interface MobileLandscapeScaleOptions {
   boardSize: 4 | 5;
@@ -17,95 +16,133 @@ export function useMobileLandscapeScale({
   const layoutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const mq = window.matchMedia(MOBILE_LANDSCAPE);
+    const mq = window.matchMedia(MOBILE_LANDSCAPE_QUERY);
 
     function update() {
       const el = layoutRef.current;
       if (!el) return;
 
       if (!mq.matches) {
+        el.removeAttribute("data-mobile-landscape");
+        el.removeAttribute("data-tablet-landscape");
+        el.removeAttribute("data-short-landscape");
         for (const prop of [
           "--cell-size",
           "--pool-station-width",
+          "--pool-surface-pad-x",
+          "--pool-surface-pad-y",
           "--grid-gap",
           "--grid-pad",
           "--play-gap",
           "--pool-stack-peek",
+          "--play-stage-pad-x",
+          "--play-stage-pad-y",
           "--mobile-layout",
+          "--board-pool-gap",
         ]) {
           el.style.removeProperty(prop);
         }
         return;
       }
 
+      el.setAttribute("data-mobile-landscape", "");
       el.style.setProperty("--mobile-layout", "1");
 
-      const cols = boardSize;
-      const vh = window.innerHeight;
-      const vw = window.innerWidth;
+      const isTablet = window.innerHeight >= TABLET_LANDSCAPE_MIN_HEIGHT;
+      if (isTablet) {
+        el.setAttribute("data-tablet-landscape", "");
+      } else {
+        el.removeAttribute("data-tablet-landscape");
+      }
 
-      const topbarH = 34;
-      const bannerH = bannerVisible ? 30 : 0;
-      const stagePadY = 4;
-      const stagePadX = 6;
-      const boardPoolGap = 6;
-      const gap = 3;
-      const gridPad = 4;
+      if (!isTablet && window.innerHeight <= 320) {
+        el.setAttribute("data-short-landscape", "");
+      } else {
+        el.removeAttribute("data-short-landscape");
+      }
+
+      const cols = boardSize;
+      const topbarH = el.querySelector<HTMLElement>(".app-topbar")?.offsetHeight ?? 34;
+      const bannerH =
+        bannerVisible && el.querySelector<HTMLElement>(".floor-banner")
+          ? el.querySelector<HTMLElement>(".floor-banner")!.offsetHeight
+          : 0;
+
+      const safeL = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--safe-left") || "0",
+      );
+      const safeR = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--safe-right") || "0",
+      );
+
+      const boardPoolGap = isTablet ? 22 : 10;
+      const gap = isTablet ? 6 : 3;
+      const gridPad = isTablet ? 8 : 4;
+      const surfacePadX = isTablet ? 26 : 18;
+      const surfacePadY = isTablet ? 20 : 14;
+      const poolHeaderH = isTablet ? 38 : 30;
+      const poolDeckLabelH = isTablet ? 18 : 14;
+      const deckStackOverhang = isTablet ? 10 : 8;
+      const deckCountBadgeH = isTablet ? 10 : 8;
+      const bridgeW = isTablet ? 14 : 10;
+      const poolCardGap = isTablet ? 8 : 5;
+      const stagePadX = isTablet ? 48 : 16;
+      const stagePadY = isTablet ? 12 : 6;
+      const widthSafety = isTablet ? 32 : 12;
+      const maxCellCap = isTablet ? 118 : 56;
+      const minCell = isTablet ? 34 : 26;
 
       const cardH = (w: number) => w * (7 / 5);
-      const surfacePad = 8;
-      const bridgeW = 4;
 
-      const playH = vh - topbarH - bannerH - stagePadY * 2;
-      const playW = vw - stagePadX * 2 - boardPoolGap;
-
-      const lineGaps = (cols - 1) * gap + 2 * gridPad;
-
-      // Pool strip: [deck][bridge][pool cards…] in one row — width tied to cell size.
       function poolWidthForCell(cellW: number): number {
         return (
-          surfacePad +
+          surfacePadX * 2 +
           cellW +
           bridgeW +
           poolSize * cellW +
-          (poolSize - 1) * 2 +
-          surfacePad
+          Math.max(0, poolSize - 1) * poolCardGap
         );
       }
 
-      let cell = Math.min(
-        (playW * 0.68 - lineGaps) / cols,
-        ((playH - lineGaps) / cols) * (5 / 7),
+      const lineGaps = (cols - 1) * gap + 2 * gridPad;
+      const playH = Math.max(
+        100,
+        window.innerHeight - topbarH - bannerH - 6,
       );
-      cell = Math.max(22, Math.min(cell, 58));
+      const playW = Math.max(
+        200,
+        window.innerWidth - safeL - safeR - stagePadX * 2 - widthSafety,
+      );
 
-      let poolW = poolWidthForCell(cell);
-      const maxPoolW = playW * 0.32;
-      if (poolW > maxPoolW) {
-        cell = Math.max(22, ((maxPoolW - surfacePad * 2 - bridgeW - (poolSize - 1) * 2) / (1 + poolSize)));
-        poolW = poolWidthForCell(cell);
+      const maxPoolH = playH - 8;
+      const cellFromHeight = ((playH - surfacePadY * 2 - lineGaps) / cols) * (5 / 7);
+      const poolFixedH =
+        poolHeaderH + surfacePadY * 2 + deckStackOverhang + poolDeckLabelH + deckCountBadgeH + 4;
+      const cellFromPoolH = ((maxPoolH - poolFixedH) * 5) / 7;
+
+      let cell = Math.min(cellFromHeight, cellFromPoolH);
+      for (let i = 0; i < 64; i++) {
+        const poolW = poolWidthForCell(cell);
+        const boardW = cols * cell + lineGaps;
+        if (boardW + boardPoolGap + poolW <= playW) break;
+        cell -= 0.5;
       }
 
-      const boardW = cols * cell + lineGaps;
-      if (boardW + poolW + boardPoolGap > playW) {
-        cell = Math.max(
-          22,
-          Math.min(
-            cell,
-            (playW - poolW - boardPoolGap - lineGaps) / cols,
-          ),
-        );
-        poolW = poolWidthForCell(cell);
-      }
-
+      cell = Math.max(minCell, Math.min(cell, maxCellCap));
       cell = Math.floor(cell * 10) / 10;
-      poolW = Math.ceil(poolWidthForCell(cell));
 
+      const poolW = Math.ceil(poolWidthForCell(cell));
+
+      el.style.setProperty("--board-pool-gap", `${boardPoolGap}px`);
+      el.style.setProperty("--play-stage-pad-x", `${stagePadX}px`);
+      el.style.setProperty("--play-stage-pad-y", `${stagePadY}px`);
       el.style.setProperty("--cell-size", `${cell}px`);
       el.style.setProperty("--grid-gap", `${gap}px`);
       el.style.setProperty("--grid-pad", `${gridPad}px`);
-      el.style.setProperty("--play-gap", "0.3rem");
-      el.style.setProperty("--pool-station-width", `${Math.ceil(poolW)}px`);
+      el.style.setProperty("--play-gap", "0.25rem");
+      el.style.setProperty("--pool-station-width", `${poolW}px`);
+      el.style.setProperty("--pool-surface-pad-x", `${surfacePadX}px`);
+      el.style.setProperty("--pool-surface-pad-y", `${surfacePadY}px`);
       el.style.setProperty(
         "--pool-stack-peek",
         `${Math.max(14, Math.ceil(cardH(cell) * 0.38))}px`,
@@ -115,6 +152,9 @@ export function useMobileLandscapeScale({
     update();
     const observer = new ResizeObserver(update);
     observer.observe(document.documentElement);
+    if (layoutRef.current) {
+      observer.observe(layoutRef.current);
+    }
     mq.addEventListener("change", update);
     window.addEventListener("orientationchange", update);
 
@@ -128,4 +168,4 @@ export function useMobileLandscapeScale({
   return layoutRef;
 }
 
-export const MOBILE_LANDSCAPE_QUERY = MOBILE_LANDSCAPE;
+export { MOBILE_LANDSCAPE_QUERY } from "./mobileLandscape";

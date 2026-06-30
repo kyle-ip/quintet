@@ -8,8 +8,10 @@ export function RotatePortraitGate() {
           <span className="rotate-phone" />
           <span className="rotate-arrow">↻</span>
         </div>
-        <p className="rotate-portrait-title">请旋转至横屏</p>
-        <p className="rotate-portrait-sub">移动端请在横屏下游玩，以便同时看到棋盘与手牌。</p>
+        <p className="rotate-portrait-title">Rotate to landscape</p>
+        <p className="rotate-portrait-sub">
+          Play in landscape to see the board and your card pool at once.
+        </p>
       </div>
     </div>
   );

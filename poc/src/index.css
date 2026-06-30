@@ -46,6 +46,8 @@
   --hand-cat-7: #dc2626;
   --hand-cat-8: #4f46e5;
   --hand-cat-9: #9333ea;
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 [data-color-mode="dark"] {
@@ -107,15 +109,6 @@ body {
 
 #root {
   min-height: 100vh;
-}
-
-@media (max-width: 900px) and (orientation: landscape) {
-  html,
-  body,
-  #root {
-    height: 100dvh;
-    overflow: hidden;
-  }
 }
 
 button,

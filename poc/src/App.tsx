@@ -227,8 +227,8 @@ export default function App() {
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 8 } }),
   );
 
   const legalKeys = new Set(legalCellKeys(state));
@@ -302,6 +302,7 @@ export default function App() {
     if (!id.startsWith("pool-")) return;
     const index = Number(id.replace("pool-", ""));
     setActiveCard(state.pool[index] ?? null);
+    setSelectedPoolIndex(null);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -423,6 +424,36 @@ export default function App() {
               onDismiss={dismissFloorBanner}
             />
           ) : null}
+
+          <div className="play-stage">
+            <div className="play-cluster">
+              <div className="play-main">
+                <Board
+                  legalDropKeys={legalKeys}
+                  isDragging={boardPlacementActive}
+                  lastPlacedKey={lastPlacedKey}
+                  tapPlaceMode={tapPlaceMode}
+                  onCellTap={handleCellTap}
+                />
+              </div>
+
+              <div className="play-bottom">
+                <Pool
+                  disabled={poolDisabled}
+                  tapPlaceMode={tapPlaceMode}
+                  selectedIndex={selectedPoolIndex}
+                  onSelectCard={handleSelectPoolCard}
+                  placementHint={
+                    placementActive
+                      ? "Tap highlighted cell"
+                      : tapPlaceMode && !poolDisabled
+                        ? "Drag or tap a card, then a cell"
+                        : null
+                  }
+                />
+              </div>
+            </div>
+          </div>
 
           <div className={`sidebar-column${settingsOpen ? " settings-open" : ""}`}>
             <aside className="game-sidebar" aria-label="Game options and stats">
@@ -595,37 +626,12 @@ export default function App() {
               </button>
             ) : null}
           </div>
-
-          <div className="play-stage">
-            <div className="play-main">
-              <Board
-                legalDropKeys={legalKeys}
-                isDragging={boardPlacementActive}
-                lastPlacedKey={lastPlacedKey}
-                tapPlaceMode={tapPlaceMode}
-                onCellTap={handleCellTap}
-              />
-            </div>
-
-            <div className="play-bottom">
-              <Pool
-                disabled={poolDisabled}
-                tapPlaceMode={tapPlaceMode}
-                selectedIndex={selectedPoolIndex}
-                onSelectCard={handleSelectPoolCard}
-                placementHint={
-                  placementActive
-                    ? "Tap highlighted cell"
-                    : tapPlaceMode && !poolDisabled
-                      ? "Tap a card, then a cell"
-                      : null
-                }
-              />
-            </div>
-          </div>
         </div>
 
-        <DragOverlay dropAnimation={null}>
+        <DragOverlay
+          dropAnimation={null}
+          className={tapPlaceMode ? "drag-overlay--touch" : undefined}
+        >
           {activeCard ? (
             <div className="card-drag-wrapper">
               <PlayingCard card={activeCard} variant="drag" className="card-dragging" />
