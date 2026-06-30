@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import type { Card } from "@/engine/card";
 import { boardCellCount } from "@/engine/grid";
@@ -25,6 +25,8 @@ interface BoardProps {
   legalDropKeys: Set<string>;
   isDragging: boolean;
   lastPlacedKey?: string | null;
+  tapPlaceMode?: boolean;
+  onCellTap?: (row: number, col: number) => void;
 }
 
 function GridCell({
@@ -37,6 +39,8 @@ function GridCell({
   justPlaced,
   accents,
   badgeLines,
+  tapPlaceMode,
+  onCellTap,
 }: {
   row: number;
   col: number;
@@ -47,6 +51,8 @@ function GridCell({
   justPlaced: boolean;
   accents: CellAccents | undefined;
   badgeLines: LineHighlight[];
+  tapPlaceMode: boolean;
+  onCellTap?: (row: number, col: number) => void;
 }) {
   const state = useGameStore((s) => s.state);
   const { setNodeRef, isOver } = useDroppable({
@@ -68,9 +74,33 @@ function GridCell({
   if (row <= 1 && card) className += " tooltip-below";
   if (isDragging && canDrop) className += " grid-cell-droppable";
   if (isOver && canDrop) className += " grid-cell-over";
+  if (tapPlaceMode && canDrop && isDragging) className += " grid-cell-tap-target";
+
+  function handleCellClick() {
+    if (!tapPlaceMode || !canDrop || !isDragging || !onCellTap) return;
+    onCellTap(row, col);
+  }
 
   return (
-    <div ref={setNodeRef} className={className} data-row={row} data-col={col}>
+    <div
+      ref={setNodeRef}
+      className={className}
+      data-row={row}
+      data-col={col}
+      onClick={tapPlaceMode && canDrop && isDragging ? handleCellClick : undefined}
+      role={tapPlaceMode && canDrop && isDragging ? "button" : undefined}
+      tabIndex={tapPlaceMode && canDrop && isDragging ? 0 : undefined}
+      onKeyDown={
+        tapPlaceMode && canDrop && isDragging
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onCellTap?.(row, col);
+              }
+            }
+          : undefined
+      }
+    >
       {hasLineAccent ? <BoardLineAccents accents={accents} /> : null}
       {badgeLines.length > 0 ? <LineHandBadgeStack lines={badgeLines} /> : null}
       {card ? (
@@ -85,7 +115,13 @@ function GridCell({
   );
 }
 
-export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: BoardProps) {
+export function Board({
+  legalDropKeys,
+  isDragging,
+  lastPlacedKey = null,
+  tapPlaceMode = false,
+  onCellTap,
+}: BoardProps) {
   const state = useGameStore((s) => s.state);
   const boardSize = state.boardSize;
   const cells = boardCellCount(boardSize);
@@ -110,6 +146,7 @@ export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: Board
       className="board"
       aria-label={`${boardSize} by ${boardSize} grid`}
       data-testid="game-board"
+      style={{ "--board-cols": boardSize } as CSSProperties}
     >
       <div className="board-inner">
         <div
@@ -132,6 +169,8 @@ export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: Board
                 justPlaced={lastPlacedKey === key}
                 accents={accentMap.get(key)}
                 badgeLines={badgeMap.get(key) ?? []}
+                tapPlaceMode={tapPlaceMode}
+                onCellTap={onCellTap}
               />
             );
           })}

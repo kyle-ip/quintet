@@ -22,6 +22,8 @@ import { NewGameConfirmModal } from "@/components/NewGameConfirm/NewGameConfirmM
 import { GameSummaryModal } from "@/components/GameSummary/GameSummaryModal";
 import { FirstGameTutorial, shouldShowTutorial } from "@/components/Tutorial/FirstGameTutorial";
 import { useAutoPlay } from "@/hooks/useAutoPlay";
+import { useTapPlaceMode } from "@/hooks/useTapPlaceMode";
+import { MobileStatsBar } from "@/components/Layout/MobileStatsBar";
 import { FloorBanner } from "@/components/Endless/FloorBanner";
 import { FloorResultModal } from "@/components/Endless/FloorResultModal";
 import { RunSummaryModal } from "@/components/Endless/RunSummaryModal";
@@ -87,6 +89,8 @@ export default function App() {
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [endlessTutorialOpen, setEndlessTutorialOpen] = useState(false);
   const [pendingMode, setPendingMode] = useState<GameMode | null>(null);
+  const [selectedPoolIndex, setSelectedPoolIndex] = useState<number | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const placeFxTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevStatus = useRef(state.status);
 
@@ -96,6 +100,48 @@ export default function App() {
     if (placeFxTimer.current) clearTimeout(placeFxTimer.current);
     placeFxTimer.current = setTimeout(() => setLastPlacedKey(null), 480);
   }, []);
+
+  const tapPlaceMode = useTapPlaceMode();
+  const poolDisabled = state.status === "finished" || autoPlay;
+  const placementActive =
+    tapPlaceMode && selectedPoolIndex !== null && !poolDisabled;
+  const boardPlacementActive = activeCard !== null || placementActive;
+
+  useEffect(() => {
+    setSelectedPoolIndex(null);
+  }, [state.turn, state.status]);
+
+  useEffect(() => {
+    if (!settingsOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setSettingsOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [settingsOpen]);
+
+  const handleSelectPoolCard = useCallback(
+    (index: number) => {
+      if (poolDisabled) return;
+      setSelectedPoolIndex((prev) => (prev === index ? null : index));
+    },
+    [poolDisabled],
+  );
+
+  const handleCellTap = useCallback(
+    (row: number, col: number) => {
+      if (selectedPoolIndex === null || poolDisabled) return;
+      if (canDropOnCell(state, row, col)) {
+        dropCard(selectedPoolIndex, row, col);
+        setSelectedPoolIndex(null);
+        const key = `${row},${col}`;
+        setLastPlacedKey(key);
+        if (placeFxTimer.current) clearTimeout(placeFxTimer.current);
+        placeFxTimer.current = setTimeout(() => setLastPlacedKey(null), 480);
+      }
+    },
+    [selectedPoolIndex, poolDisabled, state, dropCard],
+  );
 
   const isEndless = gameMode === "endless";
   const floorTarget = getEndlessFloorTarget();
@@ -282,7 +328,10 @@ export default function App() {
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="game-layout">
           <header className="app-topbar">
-            <h1>Quintet</h1>
+            <div className="topbar-brand">
+              <h1>Quintet</h1>
+              <span className="topbar-score-mobile">{liveScore.total.toFixed(1)}</span>
+            </div>
             <div className="topbar-center">
               {isEndless && endlessRun && !endlessRun.runOver ? (
                 <div className="topbar-endless" aria-label="Endless run status">
@@ -295,9 +344,18 @@ export default function App() {
                   <span>Run {endlessRun.totalScore.toFixed(1)}</span>
                 </div>
               ) : (
-                <span />
+                <span className="topbar-spacer" />
               )}
               <div className="topbar-actions">
+                <button
+                  type="button"
+                  className="btn-settings-mobile"
+                  aria-label="Settings"
+                  aria-expanded={settingsOpen}
+                  onClick={() => setSettingsOpen((open) => !open)}
+                >
+                  ⚙
+                </button>
                 <button
                   type="button"
                   onClick={undo}
@@ -312,6 +370,15 @@ export default function App() {
               </div>
             </div>
           </header>
+
+          {settingsOpen ? (
+            <button
+              type="button"
+              className="settings-backdrop"
+              aria-label="Close settings"
+              onClick={() => setSettingsOpen(false)}
+            />
+          ) : null}
 
           {isEndless && endlessRun && showFloorBanner && !endlessRun.runOver && floorTarget !== null ? (
             <FloorBanner
@@ -330,8 +397,19 @@ export default function App() {
             />
           ) : null}
 
-          <div className="sidebar-column">
+          <div className={`sidebar-column${settingsOpen ? " settings-open" : ""}`}>
             <aside className="game-sidebar" aria-label="Game options and stats">
+              <div className="settings-sheet-header">
+                <h2>Settings & stats</h2>
+                <button
+                  type="button"
+                  className="settings-close-btn"
+                  aria-label="Close settings"
+                  onClick={() => setSettingsOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
               <div className="sidebar-section">
                 <h2 className="sidebar-heading">Options</h2>
                 <label className="sidebar-field">
@@ -491,12 +569,45 @@ export default function App() {
             ) : null}
           </div>
 
-          <Board
-            legalDropKeys={legalKeys}
-            isDragging={activeCard !== null}
-            lastPlacedKey={lastPlacedKey}
-          />
-          <Pool disabled={state.status === "finished" || autoPlay} />
+          <div className="play-main">
+            <MobileStatsBar
+              score={liveScore.total}
+              turn={state.turn}
+              cellCount={cellCount}
+              deckCount={state.deck.length}
+              actionCount={actionCount}
+              timeLabel={playTimerLabel}
+              isEndless={isEndless && !!endlessRun && !endlessRun.runOver}
+              floor={endlessRun?.floor}
+              target={floorTarget}
+              lives={endlessRun?.lives}
+              runScore={endlessRun?.totalScore}
+            />
+
+            <Board
+              legalDropKeys={legalKeys}
+              isDragging={boardPlacementActive}
+              lastPlacedKey={lastPlacedKey}
+              tapPlaceMode={tapPlaceMode}
+              onCellTap={handleCellTap}
+            />
+          </div>
+
+          <div className="play-bottom">
+            {placementActive ? (
+              <p className="tap-place-hint" role="status">
+                Tap a highlighted cell to place the card
+              </p>
+            ) : tapPlaceMode && !poolDisabled ? (
+              <p className="tap-place-hint tap-place-hint-idle">Tap a card from the pool below</p>
+            ) : null}
+            <Pool
+              disabled={poolDisabled}
+              tapPlaceMode={tapPlaceMode}
+              selectedIndex={selectedPoolIndex}
+              onSelectCard={handleSelectPoolCard}
+            />
+          </div>
         </div>
 
         <DragOverlay dropAnimation={null}>

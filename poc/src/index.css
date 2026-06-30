@@ -113,6 +113,7 @@ button,
 select {
   font: inherit;
   color: var(--color-text);
+  touch-action: manipulation;
 }
 
 select {
@@ -122,8 +123,25 @@ select {
   padding: 0.2rem 0.35rem;
 }
 
+@media (max-width: 768px) {
+  :root {
+    --cell-size: min(4rem, 18vw);
+    --grid-gap: 3px;
+    --grid-pad: 5px;
+    --play-gap: 0.5rem;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  select {
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 640px) {
   :root {
-    --cell-size: clamp(44px, 12vw, 60px);
+    --cell-size: min(3.75rem, 17vw);
   }
 }

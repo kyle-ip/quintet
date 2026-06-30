@@ -15,6 +15,9 @@ function DraggablePoolCard({
   hidden,
   justDealt,
   registerSlot,
+  tapPlaceMode,
+  selected,
+  onSelect,
 }: {
   card: Card;
   index: number;
@@ -22,10 +25,14 @@ function DraggablePoolCard({
   hidden: boolean;
   justDealt: boolean;
   registerSlot: (index: number, el: HTMLDivElement | null) => void;
+  tapPlaceMode: boolean;
+  selected: boolean;
+  onSelect: (index: number) => void;
 }) {
+  const dragDisabled = disabled || tapPlaceMode;
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `pool-${index}`,
-    disabled,
+    disabled: dragDisabled,
   });
 
   const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
@@ -36,17 +43,30 @@ function DraggablePoolCard({
         setNodeRef(el);
         registerSlot(index, el);
       }}
-      style={{ ...style, zIndex: index + 1 }}
+      style={{ ...style, zIndex: selected ? 40 : index + 1 }}
       className={[
         "pool-card",
         isDragging ? "pool-card--dragging" : "",
         hidden ? "pool-card--hidden" : "",
         justDealt ? "pool-card--dealt" : "",
+        selected ? "pool-card--selected" : "",
+        tapPlaceMode ? "pool-card--tap" : "",
       ]
         .filter(Boolean)
         .join(" ")}
-      {...listeners}
-      {...attributes}
+      {...(tapPlaceMode ? {} : listeners)}
+      {...(tapPlaceMode ? {} : attributes)}
+      onClick={
+        tapPlaceMode && !disabled
+          ? (e) => {
+              e.stopPropagation();
+              onSelect(index);
+            }
+          : undefined
+      }
+      role={tapPlaceMode ? "button" : undefined}
+      aria-pressed={tapPlaceMode ? selected : undefined}
+      aria-label={tapPlaceMode ? `Select card ${index + 1}` : undefined}
     >
       <PlayingCard card={card} variant="fill" />
     </div>
@@ -55,9 +75,17 @@ function DraggablePoolCard({
 
 interface PoolProps {
   disabled?: boolean;
+  tapPlaceMode?: boolean;
+  selectedIndex?: number | null;
+  onSelectCard?: (index: number) => void;
 }
 
-export function Pool({ disabled = false }: PoolProps) {
+export function Pool({
+  disabled = false,
+  tapPlaceMode = false,
+  selectedIndex = null,
+  onSelectCard,
+}: PoolProps) {
   const pool = useGameStore((s) => s.state.pool);
   const poolSize = useGameStore((s) => s.poolSize);
   const deckCount = useGameStore((s) => s.state.deck.length);
@@ -67,7 +95,9 @@ export function Pool({ disabled = false }: PoolProps) {
     <div className="pool-column">
       <section className="pool-station" aria-label="Deck and card pool" data-testid="card-pool">
         <header className="pool-station-header">
-          <span className="pool-station-title">Pick a card</span>
+          <span className="pool-station-title">
+            {tapPlaceMode ? "Tap a card" : "Pick a card"}
+          </span>
           <span className="pool-station-meta" aria-label={`${pool.length} of ${poolSize} in pool`}>
             {pool.length}/{poolSize}
           </span>
@@ -90,7 +120,9 @@ export function Pool({ disabled = false }: PoolProps) {
                 <span>Refilling…</span>
               </div>
             ) : (
-              <div className="pool-cards pool-cards--stacked">
+              <div
+                className={`pool-cards pool-cards--stacked${tapPlaceMode ? " pool-cards--spread" : ""}`}
+              >
                 {pool.map((card, index) => (
                   <DraggablePoolCard
                     key={`${card.rank}-${card.suit}-${index}`}
@@ -100,6 +132,9 @@ export function Pool({ disabled = false }: PoolProps) {
                     hidden={hiddenIndices.has(index)}
                     justDealt={dealtIndices.has(index)}
                     registerSlot={registerSlot}
+                    tapPlaceMode={tapPlaceMode}
+                    selected={selectedIndex === index}
+                    onSelect={onSelectCard ?? (() => {})}
                   />
                 ))}
               </div>

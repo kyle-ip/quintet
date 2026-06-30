@@ -74,3 +74,38 @@
   user-select: none;
   opacity: 0.5;
 }
+
+.grid-cell-tap-target {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.grid-cell-tap-target:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .board {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .board-inner {
+    max-width: 100%;
+  }
+
+  .board .grid {
+    --cell-size: min(
+      4.25rem,
+      calc(
+        (100vw - 1.5rem - (var(--board-cols, 5) - 1) * var(--grid-gap) - 2 * var(--grid-pad)) /
+          var(--board-cols, 5)
+      )
+    );
+  }
+
+  .grid-cell-has-tooltip .card-line-tooltip {
+    display: none;
+  }
+}
