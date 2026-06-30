@@ -37,6 +37,15 @@
   --pool-station-width: calc(var(--cell-size) * 2 + var(--play-gap) + 1.1rem);
   --color-pool-tray: #e8f5ef;
   --color-pool-tray-border: #9fd4b8;
+  --hand-cat-1: #b8860b;
+  --hand-cat-2: #c45c26;
+  --hand-cat-3: #2563eb;
+  --hand-cat-4: #7c3aed;
+  --hand-cat-5: #0d9488;
+  --hand-cat-6: #db2777;
+  --hand-cat-7: #dc2626;
+  --hand-cat-8: #4f46e5;
+  --hand-cat-9: #9333ea;
 }
 
 [data-color-mode="dark"] {
@@ -69,6 +78,15 @@
   --color-game-over-text: #a3be8c;
   --color-pool-tray: #1e2a24;
   --color-pool-tray-border: #3d6a52;
+  --hand-cat-1: #d4a72c;
+  --hand-cat-2: #e07b3c;
+  --hand-cat-3: #60a5fa;
+  --hand-cat-4: #a78bfa;
+  --hand-cat-5: #2dd4bf;
+  --hand-cat-6: #f472b6;
+  --hand-cat-7: #f87171;
+  --hand-cat-8: #818cf8;
+  --hand-cat-9: #c084fc;
 }
 
 * {

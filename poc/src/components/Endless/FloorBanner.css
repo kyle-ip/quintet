@@ -1,0 +1,56 @@
+.floor-banner {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-game-over-bg);
+  color: var(--color-game-over-text);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.floor-banner-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+}
+
+.floor-banner-title {
+  font-weight: 700;
+}
+
+.floor-banner-sep {
+  opacity: 0.55;
+}
+
+.floor-banner-meta,
+.floor-banner-boss {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  opacity: 0.9;
+}
+
+.floor-banner-boss {
+  font-weight: 600;
+}
+
+.floor-banner-dismiss {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  opacity: 0.7;
+}
+
+.floor-banner-dismiss:hover {
+  opacity: 1;
+}

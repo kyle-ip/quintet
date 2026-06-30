@@ -1,0 +1,100 @@
+.board-line-accents {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.line-accent {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.72;
+  transition: opacity 0.2s ease;
+}
+
+.line-accent-complete {
+  opacity: 0.92;
+}
+
+.line-accent-row {
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line-accent-color);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--line-accent-color) 45%, transparent);
+}
+
+.line-accent-col {
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--line-accent-color);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--line-accent-color) 45%, transparent);
+}
+
+.line-accent:not(.line-accent-complete).line-accent-row,
+.line-accent:not(.line-accent-complete).line-accent-col {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--line-accent-color) 0 5px,
+    transparent 5px 8px
+  );
+}
+
+.line-accent:not(.line-accent-complete).line-accent-col {
+  background: repeating-linear-gradient(
+    180deg,
+    var(--line-accent-color) 0 5px,
+    transparent 5px 8px
+  );
+}
+
+.line-accent-diag {
+  inset: 12%;
+  background: linear-gradient(
+    var(--diag-angle, 135deg),
+    transparent calc(50% - 1px),
+    var(--line-accent-color) calc(50% - 1px),
+    var(--line-accent-color) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.line-accent-diag-main {
+  --diag-angle: 135deg;
+}
+
+.line-accent-diag-anti {
+  --diag-angle: 45deg;
+}
+
+.line-accent-complete.line-accent-diag {
+  opacity: 0.75;
+}
+
+.line-accent:not(.line-accent-complete).line-accent-diag {
+  opacity: 0.42;
+  background: repeating-linear-gradient(
+    var(--diag-angle, 135deg),
+    var(--line-accent-color) 0 4px,
+    transparent 4px 7px,
+    transparent 50%,
+    var(--line-accent-color) 50% calc(50% + 4px),
+    transparent calc(50% + 4px) calc(50% + 7px)
+  );
+}
+
+.grid-cell-has-line-accent {
+  position: relative;
+}
+
+.grid-cell-has-line-accent .playing-card {
+  position: relative;
+  z-index: 1;
+}

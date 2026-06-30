@@ -8,35 +8,64 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "@/components/Board/Board";
 import { Pool } from "@/components/Pool/Pool";
 import { PlayingCard } from "@/components/Card/PlayingCard";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore, type GameMode } from "@/store/gameStore";
 import type { Card } from "@/engine/card";
 import { canDropOnCell, legalCellKeys, POOL_SIZE_OPTIONS } from "@/engine/game";
-import { parseCellKey } from "@/engine/grid";
+import { BOARD_SIZE_OPTIONS, boardCellCount, parseCellKey } from "@/engine/grid";
 import { CARD_THEME_LIST } from "@themes/index";
 import type { ColorMode } from "@/config/colorMode";
-import { ScoringRulesModal } from "@/components/ScoringRules/ScoringRulesModal";
 import { NewGameConfirmModal } from "@/components/NewGameConfirm/NewGameConfirmModal";
 import { GameSummaryModal } from "@/components/GameSummary/GameSummaryModal";
 import { FirstGameTutorial, shouldShowTutorial } from "@/components/Tutorial/FirstGameTutorial";
-import { LinesPanel } from "@/components/LinesPanel/LinesPanel";
+import { useAutoPlay } from "@/hooks/useAutoPlay";
+import { FloorBanner } from "@/components/Endless/FloorBanner";
+import { FloorResultModal } from "@/components/Endless/FloorResultModal";
+import { RunSummaryModal } from "@/components/Endless/RunSummaryModal";
+import {
+  EndlessTutorial,
+  shouldShowEndlessTutorial,
+} from "@/components/Endless/EndlessTutorial";
+import {
+  ENDLESS_STARTING_LIVES,
+  getBossIdForFloor,
+  getEndlessGateBreakdown,
+} from "@/engine/run";
 import { usePlayTimerDisplay } from "@/hooks/usePlayTimer";
 import "./App.css";
 
+const GAME_MODES: { id: GameMode; label: string }[] = [
+  { id: "classic", label: "Classic" },
+  { id: "endless", label: "Endless" },
+];
+
 export default function App() {
+  const gameMode = useGameStore((s) => s.gameMode);
+  const boardSize = useGameStore((s) => s.boardSize);
   const poolSize = useGameStore((s) => s.poolSize);
   const state = useGameStore((s) => s.state);
   const liveScore = useGameStore((s) => s.liveScore);
   const actionCount = useGameStore((s) => s.actionCount);
   const themeId = useGameStore((s) => s.themeId);
   const colorMode = useGameStore((s) => s.colorMode);
+  const endlessRun = useGameStore((s) => s.endlessRun);
+  const showFloorBanner = useGameStore((s) => s.showFloorBanner);
+  const undoUsesThisFloor = useGameStore((s) => s.undoUsesThisFloor);
   const initGame = useGameStore((s) => s.initGame);
+  const startEndlessRun = useGameStore((s) => s.startEndlessRun);
+  const setGameMode = useGameStore((s) => s.setGameMode);
+  const continueEndlessFloor = useGameStore((s) => s.continueEndlessFloor);
+  const retryEndlessFloor = useGameStore((s) => s.retryEndlessFloor);
+  const endEndlessRun = useGameStore((s) => s.endEndlessRun);
+  const dismissFloorBanner = useGameStore((s) => s.dismissFloorBanner);
   const dropCard = useGameStore((s) => s.dropCard);
   const undo = useGameStore((s) => s.undo);
   const canUndo = useGameStore((s) => s.canUndo);
+  const getUndoLimit = useGameStore((s) => s.getUndoLimit);
+  const getEndlessFloorTarget = useGameStore((s) => s.getEndlessFloorTarget);
   const setThemeId = useGameStore((s) => s.setThemeId);
   const setColorMode = useGameStore((s) => s.setColorMode);
   const timerStartAt = useGameStore((s) => s.timerStartAt);
@@ -50,12 +79,72 @@ export default function App() {
 
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [lastPlacedKey, setLastPlacedKey] = useState<string | null>(null);
-  const [scoringRulesOpen, setScoringRulesOpen] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
   const [newGameConfirmOpen, setNewGameConfirmOpen] = useState(false);
   const [gameSummaryOpen, setGameSummaryOpen] = useState(false);
+  const [floorResultOpen, setFloorResultOpen] = useState(false);
+  const [runSummaryOpen, setRunSummaryOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [endlessTutorialOpen, setEndlessTutorialOpen] = useState(false);
+  const [pendingMode, setPendingMode] = useState<GameMode | null>(null);
   const placeFxTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevStatus = useRef(state.status);
+
+  const handleAutoPlaced = useCallback((row: number, col: number) => {
+    const key = `${row},${col}`;
+    setLastPlacedKey(key);
+    if (placeFxTimer.current) clearTimeout(placeFxTimer.current);
+    placeFxTimer.current = setTimeout(() => setLastPlacedKey(null), 480);
+  }, []);
+
+  const isEndless = gameMode === "endless";
+  const floorTarget = getEndlessFloorTarget();
+  const gateBreakdown =
+    isEndless && endlessRun
+      ? getEndlessGateBreakdown(
+          endlessRun.floor,
+          { clearedScores: endlessRun.clearedScores },
+          boardSize,
+        )
+      : null;
+  const undoLimit = getUndoLimit();
+  const cellCount = boardCellCount(state.boardSize);
+  const boardLocked =
+    state.turn > 0 && state.status === "playing" && (!isEndless || endlessRun?.floor !== 1);
+  const poolLocked = isEndless
+    ? endlessRun?.floor !== 1 || state.turn > 0
+    : state.turn > 0 && state.status === "playing";
+
+  const autoPlayBlocked =
+    newGameConfirmOpen ||
+    tutorialOpen ||
+    endlessTutorialOpen ||
+    gameSummaryOpen ||
+    runSummaryOpen ||
+    (isEndless && showFloorBanner);
+
+  useAutoPlay({
+    autoPlay,
+    state,
+    dropCard,
+    onPlaced: handleAutoPlaced,
+    blocked: autoPlayBlocked,
+    floorResultOpen,
+    pendingFloorResult: endlessRun?.pendingFloorResult,
+    lives: endlessRun?.lives ?? 0,
+    onContinueFloor: () => {
+      setFloorResultOpen(false);
+      continueEndlessFloor();
+    },
+    onRetryFloor: () => {
+      setFloorResultOpen(false);
+      retryEndlessFloor(false);
+    },
+    onEndRun: () => {
+      setFloorResultOpen(false);
+      endEndlessRun();
+    },
+  });
 
   useEffect(() => {
     return () => {
@@ -64,11 +153,24 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (gameMode !== "classic") return;
     if (prevStatus.current !== "finished" && state.status === "finished") {
       setGameSummaryOpen(true);
     }
     prevStatus.current = state.status;
-  }, [state.status]);
+  }, [state.status, gameMode]);
+
+  useEffect(() => {
+    if (isEndless && endlessRun?.pendingFloorResult) {
+      setFloorResultOpen(true);
+    }
+  }, [isEndless, endlessRun?.pendingFloorResult]);
+
+  useEffect(() => {
+    if (isEndless && endlessRun?.runOver) {
+      setRunSummaryOpen(true);
+    }
+  }, [isEndless, endlessRun?.runOver]);
 
   useEffect(() => {
     if (shouldShowTutorial()) {
@@ -95,13 +197,56 @@ export default function App() {
   }, [undo]);
 
   function startNewGame() {
-    initGame(poolSize);
+    if (isEndless) {
+      startEndlessRun(poolSize);
+    } else {
+      initGame(poolSize);
+    }
     setNewGameConfirmOpen(false);
     setGameSummaryOpen(false);
+    setFloorResultOpen(false);
+    setRunSummaryOpen(false);
   }
 
   function handleNewGame() {
     setNewGameConfirmOpen(true);
+  }
+
+  function startBoard(board: typeof boardSize, poolK: number) {
+    if (isEndless) {
+      useGameStore.setState({ boardSize: board });
+      startEndlessRun(poolK);
+    } else {
+      useGameStore.setState({ boardSize: board });
+      initGame(poolK);
+    }
+  }
+
+  function handleGameModeChange(nextMode: GameMode) {
+    if (nextMode === gameMode) return;
+    const hasProgress = state.turn > 0 && state.status === "playing";
+    if (hasProgress) {
+      setPendingMode(nextMode);
+      setNewGameConfirmOpen(true);
+      return;
+    }
+    setGameMode(nextMode);
+    if (nextMode === "endless" && shouldShowEndlessTutorial()) {
+      setEndlessTutorialOpen(true);
+    }
+  }
+
+  function confirmModeOrNewGame() {
+    if (pendingMode) {
+      setGameMode(pendingMode);
+      setPendingMode(null);
+      setNewGameConfirmOpen(false);
+      if (pendingMode === "endless" && shouldShowEndlessTutorial()) {
+        setEndlessTutorialOpen(true);
+      }
+      return;
+    }
+    startNewGame();
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -129,6 +274,8 @@ export default function App() {
   }
 
   const hasProgress = state.turn > 0;
+  const undoLabel =
+    undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo";
 
   return (
     <div className="app">
@@ -136,26 +283,96 @@ export default function App() {
         <div className="game-layout">
           <header className="app-topbar">
             <h1>Quintet</h1>
-            <div className="topbar-actions">
-              <button type="button" onClick={undo} disabled={!canUndo()} title="Undo (Ctrl+Z)">
-                Undo
-              </button>
-              <button type="button" className="btn-new-game" onClick={handleNewGame}>
-                New game
-              </button>
+            <div className="topbar-center">
+              {isEndless && endlessRun && !endlessRun.runOver ? (
+                <div className="topbar-endless" aria-label="Endless run status">
+                  <span>Floor {endlessRun.floor}</span>
+                  {floorTarget !== null ? <span>Target {floorTarget.toFixed(1)}</span> : null}
+                  <span aria-label={`${endlessRun.lives} lives`}>
+                    {"♥".repeat(endlessRun.lives)}
+                    {"♡".repeat(Math.max(0, ENDLESS_STARTING_LIVES - endlessRun.lives))}
+                  </span>
+                  <span>Run {endlessRun.totalScore.toFixed(1)}</span>
+                </div>
+              ) : (
+                <span />
+              )}
+              <div className="topbar-actions">
+                <button
+                  type="button"
+                  onClick={undo}
+                  disabled={!canUndo()}
+                  title={undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo (Ctrl+Z)"}
+                >
+                  {undoLabel}
+                </button>
+                <button type="button" className="btn-new-game" onClick={handleNewGame}>
+                  New game
+                </button>
+              </div>
             </div>
           </header>
+
+          {isEndless && endlessRun && showFloorBanner && !endlessRun.runOver && floorTarget !== null ? (
+            <FloorBanner
+              floor={endlessRun.floor}
+              target={floorTarget}
+              baseTarget={gateBreakdown?.baseGate ?? floorTarget}
+              paceTarget={gateBreakdown?.paceGate ?? null}
+              lives={endlessRun.lives}
+              maxLives={ENDLESS_STARTING_LIVES}
+              deckSize={state.deckSize}
+              poolK={state.poolSize}
+              bossId={getBossIdForFloor(endlessRun.floor)}
+              runScore={endlessRun.totalScore}
+              gateReliefActive={endlessRun.gateReliefActive}
+              onDismiss={dismissFloorBanner}
+            />
+          ) : null}
 
           <div className="sidebar-column">
             <aside className="game-sidebar" aria-label="Game options and stats">
               <div className="sidebar-section">
                 <h2 className="sidebar-heading">Options</h2>
                 <label className="sidebar-field">
+                  <span className="sidebar-label">Game mode</span>
+                  <select
+                    value={gameMode}
+                    onChange={(e) => handleGameModeChange(e.target.value as GameMode)}
+                  >
+                    {GAME_MODES.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="sidebar-field">
+                  <span className="sidebar-label">Board</span>
+                  <select
+                    value={boardSize}
+                    disabled={boardLocked}
+                    onChange={(e) => {
+                      const next = Number(e.target.value) as 4 | 5;
+                      startBoard(next, poolSize);
+                    }}
+                  >
+                    {BOARD_SIZE_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}×{n}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="sidebar-field">
                   <span className="sidebar-label">Pool k</span>
                   <select
                     value={poolSize}
-                    disabled={state.turn > 0 && state.status === "playing"}
-                    onChange={(e) => initGame(Number(e.target.value))}
+                    disabled={poolLocked}
+                    onChange={(e) => {
+                      const k = Number(e.target.value);
+                      startBoard(boardSize, k);
+                    }}
                   >
                     {POOL_SIZE_OPTIONS.map((k) => (
                       <option key={k} value={k}>
@@ -175,7 +392,7 @@ export default function App() {
                   </select>
                 </label>
                 <label className="sidebar-field">
-                  <span className="sidebar-label">Mode</span>
+                  <span className="sidebar-label">Appearance</span>
                   <select
                     value={colorMode}
                     onChange={(e) => setColorMode(e.target.value as ColorMode)}
@@ -184,18 +401,46 @@ export default function App() {
                     <option value="dark">Dark</option>
                   </select>
                 </label>
+                <label className="sidebar-field sidebar-field-checkbox">
+                  <span className="sidebar-label">Auto play</span>
+                  <input
+                    type="checkbox"
+                    checked={autoPlay}
+                    onChange={(e) => setAutoPlay(e.target.checked)}
+                  />
+                </label>
               </div>
 
               <div className="sidebar-section">
                 <h2 className="sidebar-heading">Stats</h2>
                 <dl className="sidebar-stats">
+                  {isEndless && endlessRun ? (
+                    <>
+                      <div className="stat-row">
+                        <dt>Floor</dt>
+                        <dd>{endlessRun.floor}</dd>
+                      </div>
+                      <div className="stat-row">
+                        <dt>Target</dt>
+                        <dd>{floorTarget?.toFixed(1) ?? "—"}</dd>
+                      </div>
+                      <div className="stat-row">
+                        <dt>Lives</dt>
+                        <dd>{endlessRun.lives}</dd>
+                      </div>
+                      <div className="stat-row">
+                        <dt>Run score</dt>
+                        <dd>{endlessRun.totalScore.toFixed(1)}</dd>
+                      </div>
+                    </>
+                  ) : null}
                   <div className="stat-row">
                     <dt>Deck</dt>
                     <dd>{state.deck.length}</dd>
                   </div>
                   <div className="stat-row">
                     <dt>Turn</dt>
-                    <dd>{state.turn}/25</dd>
+                    <dd>{state.turn}/{cellCount}</dd>
                   </div>
                   <div className="stat-row">
                     <dt>Actions</dt>
@@ -214,7 +459,7 @@ export default function App() {
                 </dl>
               </div>
 
-              <LinesPanel score={liveScore} />
+
             </aside>
 
             <button
@@ -225,7 +470,7 @@ export default function App() {
               How to play
             </button>
 
-            {state.status === "finished" && !gameSummaryOpen ? (
+            {gameMode === "classic" && state.status === "finished" && !gameSummaryOpen ? (
               <button
                 type="button"
                 className="view-results-btn"
@@ -235,14 +480,15 @@ export default function App() {
               </button>
             ) : null}
 
-            <button
-              type="button"
-              className="scoring-rules-btn"
-              onClick={() => setScoringRulesOpen(true)}
-              aria-haspopup="dialog"
-            >
-              Scoring rules
-            </button>
+            {isEndless && state.status === "finished" && endlessRun?.pendingFloorResult && !floorResultOpen ? (
+              <button
+                type="button"
+                className="view-results-btn"
+                onClick={() => setFloorResultOpen(true)}
+              >
+                View floor result
+              </button>
+            ) : null}
           </div>
 
           <Board
@@ -250,7 +496,7 @@ export default function App() {
             isDragging={activeCard !== null}
             lastPlacedKey={lastPlacedKey}
           />
-          <Pool disabled={state.status === "finished"} />
+          <Pool disabled={state.status === "finished" || autoPlay} />
         </div>
 
         <DragOverlay dropAnimation={null}>
@@ -263,16 +509,19 @@ export default function App() {
       </DndContext>
 
       <FirstGameTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
-      <ScoringRulesModal open={scoringRulesOpen} onClose={() => setScoringRulesOpen(false)} />
+      <EndlessTutorial open={endlessTutorialOpen} onClose={() => setEndlessTutorialOpen(false)} />
       <NewGameConfirmModal
         open={newGameConfirmOpen}
-        hasProgress={hasProgress}
+        hasProgress={hasProgress || pendingMode !== null}
         isFinished={state.status === "finished"}
-        onConfirm={startNewGame}
-        onClose={() => setNewGameConfirmOpen(false)}
+        onConfirm={confirmModeOrNewGame}
+        onClose={() => {
+          setNewGameConfirmOpen(false);
+          setPendingMode(null);
+        }}
       />
       <GameSummaryModal
-        open={gameSummaryOpen}
+        open={gameSummaryOpen && gameMode === "classic"}
         score={liveScore}
         actionCount={actionCount}
         elapsedMs={elapsedMs}
@@ -282,6 +531,50 @@ export default function App() {
           setNewGameConfirmOpen(true);
         }}
       />
+      {isEndless && endlessRun?.pendingFloorResult ? (
+        <FloorResultModal
+          open={floorResultOpen}
+          floor={endlessRun.floor}
+          result={endlessRun.pendingFloorResult}
+          lives={endlessRun.lives}
+          maxLives={ENDLESS_STARTING_LIVES}
+          gateReliefAvailable={!endlessRun.gateReliefUsedThisFloor}
+          onContinue={() => {
+            setFloorResultOpen(false);
+            continueEndlessFloor();
+          }}
+          onRetry={() => {
+            setFloorResultOpen(false);
+            retryEndlessFloor(false);
+          }}
+          onRetryWithRelief={() => {
+            setFloorResultOpen(false);
+            retryEndlessFloor(true);
+          }}
+          onEndRun={() => {
+            setFloorResultOpen(false);
+            endEndlessRun();
+          }}
+          onClose={() => setFloorResultOpen(false)}
+        />
+      ) : null}
+      {isEndless && endlessRun?.runOver ? (
+        <RunSummaryModal
+          open={runSummaryOpen}
+          maxFloorCleared={endlessRun.maxFloorCleared}
+          totalScore={endlessRun.totalScore}
+          startingPoolK={endlessRun.startingPoolK}
+          onNewRun={() => {
+            setRunSummaryOpen(false);
+            startEndlessRun(endlessRun.startingPoolK);
+          }}
+          onClassicMode={() => {
+            setRunSummaryOpen(false);
+            initGame(poolSize);
+          }}
+          onClose={() => setRunSummaryOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

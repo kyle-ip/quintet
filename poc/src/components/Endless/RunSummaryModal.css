@@ -1,0 +1,37 @@
+.run-summary-stats {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.run-summary-stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.run-summary-stats dt {
+  margin: 0;
+  font-weight: 500;
+}
+
+.run-summary-stats dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.run-summary-best h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.run-summary-best p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.run-summary-new-best {
+  margin-top: 0.5rem !important;
+  font-weight: 700;
+  color: var(--color-accent, #2d6a4f);
+}

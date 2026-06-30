@@ -9,7 +9,6 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, var(--cell-size));
   gap: var(--grid-gap);
   padding: var(--grid-pad);
   background: var(--color-grid-bg);
@@ -19,6 +18,7 @@
 }
 
 .grid-cell {
+  position: relative;
   width: var(--cell-size);
   aspect-ratio: 5 / 7;
   display: flex;

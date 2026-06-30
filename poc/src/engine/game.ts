@@ -1,6 +1,6 @@
 import type { Card } from "./card";
 import { Deck } from "./deck";
-import { Grid } from "./grid";
+import { boardCellCount, type BoardSize, DEFAULT_BOARD_SIZE, Grid } from "./grid";
 import { scoreGridComplete } from "./scoring";
 
 export type GameStatus = "playing" | "finished";
@@ -12,26 +12,57 @@ export const POOL_SIZE_OPTIONS = [1, 2, 3, 4, 5] as const;
 
 export interface SoloGameState {
   poolSize: number;
+  boardSize: BoardSize;
   deck: Card[];
   pool: Card[];
   gridCells: (Card | null)[];
   turn: number;
   status: GameStatus;
+  /** Cards available at shuffle time (sub-deck pressure). */
+  deckSize: number;
 }
 
-export function createInitialState(poolSize: number, rng: () => number = Math.random): SoloGameState {
+export interface CreateGameOptions {
+  boardSize?: BoardSize;
+  deckSize?: number;
+  rng?: () => number;
+}
+
+export function gridFromState(state: SoloGameState): Grid {
+  return Grid.fromCells(state.gridCells, state.boardSize);
+}
+
+export function createInitialState(
+  poolSize: number,
+  options: CreateGameOptions | (() => number) = {},
+): SoloGameState {
+  let opts: CreateGameOptions;
+  if (typeof options === "function") {
+    opts = { rng: options };
+  } else {
+    opts = options;
+  }
+  const rng = opts.rng ?? Math.random;
+  const boardSize = opts.boardSize ?? DEFAULT_BOARD_SIZE;
+  const cells = boardCellCount(boardSize);
   if (poolSize < POOL_SIZE_MIN || poolSize > POOL_SIZE_MAX) {
     throw new Error(`pool_size must be ${POOL_SIZE_MIN}–${POOL_SIZE_MAX}`);
+  }
+  const deckSize = opts.deckSize ?? 52;
+  if (deckSize < cells || deckSize > 52) {
+    throw new Error(`deckSize must be ${cells}–52`);
   }
   const deck = new Deck();
   deck.shuffle(rng);
   const state: SoloGameState = {
     poolSize,
-    deck: deck.cards,
+    boardSize,
+    deck: deck.cards.slice(0, deckSize),
     pool: [],
-    gridCells: Array(25).fill(null),
+    gridCells: Array(cells).fill(null),
     turn: 0,
     status: "playing",
+    deckSize,
   };
   return refillPool(state);
 }
@@ -50,7 +81,7 @@ function refillPool(state: SoloGameState): SoloGameState {
 }
 
 export function legalCellKeys(state: SoloGameState): string[] {
-  const grid = Grid.fromCells(state.gridCells);
+  const grid = gridFromState(state);
   return grid.legalPositions().map(({ row, col }) => `${row},${col}`);
 }
 
@@ -67,7 +98,7 @@ export function placeFromPool(
   if (state.status !== "playing") {
     throw new Error("Game is finished");
   }
-  const grid = Grid.fromCells(state.gridCells);
+  const grid = gridFromState(state);
   if (grid.isFull()) {
     throw new Error("Grid is full");
   }
@@ -98,7 +129,7 @@ export function placeFromPool(
 }
 
 export function finalScore(state: SoloGameState) {
-  const grid = Grid.fromCells(state.gridCells);
+  const grid = gridFromState(state);
   if (!grid.isFull()) {
     throw new Error("Game not finished");
   }

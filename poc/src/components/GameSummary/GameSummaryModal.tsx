@@ -80,7 +80,7 @@ export function GameSummaryModal({
       <dl className="game-summary-stats">
         <div>
           <dt>Lines scored</dt>
-          <dd>{completeLines.length}/12</dd>
+          <dd>{completeLines.length}/{score.lines.length}</dd>
         </div>
         <div>
           <dt>Actions</dt>

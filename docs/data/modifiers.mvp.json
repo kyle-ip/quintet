@@ -1,0 +1,147 @@
+[
+  {
+    "id": "wide_pool",
+    "name": "广池",
+    "nameEn": "Wide Pool",
+    "description": "pool k +1（上限 5）",
+    "descriptionEn": "Pool size +1 (max 5)",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["pool"],
+    "effects": [{ "type": "pool_delta", "value": 1 }]
+  },
+  {
+    "id": "narrow_pool",
+    "name": "窄池",
+    "nameEn": "Narrow Pool",
+    "description": "pool k −1（下限 2）；每条 complete 线 +3 分",
+    "descriptionEn": "Pool size −1 (min 2); +3 per complete line",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["pool", "score"],
+    "effects": [
+      { "type": "pool_delta", "value": -1 },
+      { "type": "line_flat_bonus", "value": 3, "lineSelector": "all" }
+    ]
+  },
+  {
+    "id": "line_boost_row",
+    "name": "行赏",
+    "nameEn": "Row Boost",
+    "description": "随机一行 complete 时该线 ×1.5",
+    "descriptionEn": "×1.5 score when a random row completes",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["score", "line"],
+    "effects": [{ "type": "line_multiplier", "value": 1.5, "lineSelector": "random_row" }]
+  },
+  {
+    "id": "line_boost_col",
+    "name": "列赏",
+    "nameEn": "Column Boost",
+    "description": "随机一列 complete 时该线 ×1.5",
+    "descriptionEn": "×1.5 score when a random column completes",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["score", "line"],
+    "effects": [{ "type": "line_multiplier", "value": 1.5, "lineSelector": "random_col" }]
+  },
+  {
+    "id": "diag_focus",
+    "name": "对角心",
+    "nameEn": "Diag Focus",
+    "description": "两条对角均 complete 时 +15 分",
+    "descriptionEn": "+15 when both diagonals complete",
+    "rarity": "rare",
+    "maxStacks": 1,
+    "tags": ["score", "diag"],
+    "effects": [{ "type": "diag_bonus", "value": 15, "lineSelector": "both_diags" }]
+  },
+  {
+    "id": "mulligan",
+    "name": "换牌",
+    "nameEn": "Mulligan",
+    "description": "每盘开始前可弃 1 张 pool 牌并补 1 张",
+    "descriptionEn": "Discard 1 pool card and redraw once per floor",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["setup"],
+    "effects": [{ "type": "mulligan", "value": 1 }]
+  },
+  {
+    "id": "steady_hand",
+    "name": "稳手",
+    "nameEn": "Steady Hand",
+    "description": "非 Boss 关门槛 −8",
+    "descriptionEn": "Floor target −8 on non-Boss floors",
+    "rarity": "rare",
+    "maxStacks": 1,
+    "tags": ["gate"],
+    "effects": [{ "type": "gate_delta", "value": -8, "conditions": { "nonBossFloor": true } }]
+  },
+  {
+    "id": "glass_grid",
+    "name": "玻璃盘",
+    "nameEn": "Glass Grid",
+    "description": "本盘最终分 ×1.3；未过关额外扣 1 命",
+    "descriptionEn": "×1.3 final score; fail costs +1 life",
+    "rarity": "legendary",
+    "maxStacks": 1,
+    "tags": ["score", "risk"],
+    "effects": [
+      { "type": "score_multiplier", "value": 1.3 },
+      { "type": "fail_life_delta", "value": 1 }
+    ]
+  },
+  {
+    "id": "chip_hoarder",
+    "name": "囤分",
+    "nameEn": "Chip Hoarder",
+    "description": "超过门槛的部分 ×1.2 计入过关判定",
+    "descriptionEn": "×1.2 on score above gate (clear check only)",
+    "rarity": "rare",
+    "maxStacks": 1,
+    "tags": ["gate", "score"],
+    "effects": [{ "type": "over_gate_multiplier", "value": 1.2 }]
+  },
+  {
+    "id": "sparse_master",
+    "name": "稀疏大师",
+    "nameEn": "Sparse Master",
+    "description": "deckSize ≤45 时每条 complete 线 +2 分",
+    "descriptionEn": "+2 per complete line when deck ≤45 cards",
+    "rarity": "rare",
+    "maxStacks": 1,
+    "tags": ["score", "deck"],
+    "effects": [
+      {
+        "type": "line_flat_bonus",
+        "value": 2,
+        "lineSelector": "all",
+        "conditions": { "maxDeckSize": 45 }
+      }
+    ]
+  },
+  {
+    "id": "heart_line",
+    "name": "心线",
+    "nameEn": "Heart Line",
+    "description": "主对角 complete 时 ×1.4",
+    "descriptionEn": "×1.4 when main diagonal completes",
+    "rarity": "common",
+    "maxStacks": 1,
+    "tags": ["score", "diag"],
+    "effects": [{ "type": "line_multiplier", "value": 1.4, "lineSelector": "main_diag" }]
+  },
+  {
+    "id": "second_wind",
+    "name": "续命",
+    "nameEn": "Second Wind",
+    "description": "首次命尽时保留 1 命（每 run 一次）",
+    "descriptionEn": "Survive once at 0 lives per run",
+    "rarity": "legendary",
+    "maxStacks": 1,
+    "tags": ["life"],
+    "effects": [{ "type": "second_wind", "value": 1 }]
+  }
+]

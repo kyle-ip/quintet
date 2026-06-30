@@ -1,13 +1,25 @@
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import type { Card } from "@/engine/card";
-import { GRID_SIZE, Grid } from "@/engine/grid";
+import { boardCellCount } from "@/engine/grid";
 import { getCellScoreHint } from "@/engine/scoring";
+import { gridFromState } from "@/engine/game";
+import {
+  buildCellAccentMap,
+  getQualifyingLineHighlights,
+  lineBadgeAnchor,
+  type CellAccents,
+  type LineHighlight,
+} from "@/engine/lineHighlights";
 import { PlayingCard } from "@/components/Card/PlayingCard";
 import { CardLineTooltip } from "@/components/Board/CardLineTooltip";
+import { BoardLineAccents } from "@/components/Board/BoardLineAccents";
+import { LineHandBadgeStack } from "@/components/Board/BoardLineBadges";
 import { useGameStore } from "@/store/gameStore";
 import "./Board.css";
 import "./CardLineTooltip.css";
+import "./BoardLineAccents.css";
+import "./BoardLineBadges.css";
 
 interface BoardProps {
   legalDropKeys: Set<string>;
@@ -23,6 +35,8 @@ function GridCell({
   canDrop,
   isDragging,
   justPlaced,
+  accents,
+  badgeLines,
 }: {
   row: number;
   col: number;
@@ -31,8 +45,10 @@ function GridCell({
   canDrop: boolean;
   isDragging: boolean;
   justPlaced: boolean;
+  accents: CellAccents | undefined;
+  badgeLines: LineHighlight[];
 }) {
-  const gridCells = useGameStore((s) => s.state.gridCells);
+  const state = useGameStore((s) => s.state);
   const { setNodeRef, isOver } = useDroppable({
     id: `cell-${cellKey}`,
     disabled: card !== null || !canDrop,
@@ -40,11 +56,14 @@ function GridCell({
 
   const hint = useMemo(() => {
     if (!card) return null;
-    return getCellScoreHint(Grid.fromCells(gridCells), row, col);
-  }, [card, gridCells, row, col]);
+    return getCellScoreHint(gridFromState(state), row, col);
+  }, [card, state, row, col]);
+
+  const hasLineAccent = accents !== undefined;
 
   let className = "grid-cell";
   if (card) className += " grid-cell-filled grid-cell-has-tooltip";
+  if (hasLineAccent) className += " grid-cell-has-line-accent";
   if (justPlaced) className += " grid-cell-just-placed";
   if (row <= 1 && card) className += " tooltip-below";
   if (isDragging && canDrop) className += " grid-cell-droppable";
@@ -52,10 +71,12 @@ function GridCell({
 
   return (
     <div ref={setNodeRef} className={className} data-row={row} data-col={col}>
+      {hasLineAccent ? <BoardLineAccents accents={accents} /> : null}
+      {badgeLines.length > 0 ? <LineHandBadgeStack lines={badgeLines} /> : null}
       {card ? (
         <>
           <PlayingCard card={card} variant="fill" justPlaced={justPlaced} />
-          {hint && <CardLineTooltip hint={hint} />}
+          {hint ? <CardLineTooltip hint={hint} /> : null}
         </>
       ) : (
         <span className="grid-cell-empty">·</span>
@@ -65,15 +86,39 @@ function GridCell({
 }
 
 export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: BoardProps) {
-  const gridCells = useGameStore((s) => s.state.gridCells);
+  const state = useGameStore((s) => s.state);
+  const boardSize = state.boardSize;
+  const cells = boardCellCount(boardSize);
+
+  const { accentMap, badgeMap } = useMemo(() => {
+    const grid = gridFromState(state);
+    const highlights = getQualifyingLineHighlights(grid);
+    const accents = buildCellAccentMap(highlights);
+    const badges = new Map<string, LineHighlight[]>();
+
+    for (const line of highlights) {
+      const anchor = lineBadgeAnchor(line, boardSize);
+      const key = `${anchor.row},${anchor.col}`;
+      badges.set(key, [...(badges.get(key) ?? []), line]);
+    }
+
+    return { accentMap: accents, badgeMap: badges };
+  }, [state, boardSize]);
 
   return (
-    <section className="board" aria-label="5 by 5 grid" data-testid="game-board">
+    <section
+      className="board"
+      aria-label={`${boardSize} by ${boardSize} grid`}
+      data-testid="game-board"
+    >
       <div className="board-inner">
-        <div className="grid">
-          {Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, i) => {
-            const row = Math.floor(i / GRID_SIZE);
-            const col = i % GRID_SIZE;
+        <div
+          className="grid"
+          style={{ gridTemplateColumns: `repeat(${boardSize}, var(--cell-size))` }}
+        >
+          {Array.from({ length: cells }, (_, i) => {
+            const row = Math.floor(i / boardSize);
+            const col = i % boardSize;
             const key = `${row},${col}`;
             return (
               <GridCell
@@ -81,10 +126,12 @@ export function Board({ legalDropKeys, isDragging, lastPlacedKey = null }: Board
                 row={row}
                 col={col}
                 cellKey={key}
-                card={gridCells[i]}
+                card={state.gridCells[i]}
                 canDrop={legalDropKeys.has(key)}
                 isDragging={isDragging}
                 justPlaced={lastPlacedKey === key}
+                accents={accentMap.get(key)}
+                badgeLines={badgeMap.get(key) ?? []}
               />
             );
           })}

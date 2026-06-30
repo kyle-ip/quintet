@@ -98,8 +98,31 @@
   text-align: left;
 }
 
-.topbar-actions {
+.topbar-center {
   grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  min-width: 0;
+}
+
+.topbar-endless {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.topbar-endless span {
+  white-space: nowrap;
+}
+
+.topbar-actions {
   justify-self: end;
   display: flex;
   align-items: center;
@@ -176,6 +199,18 @@
 
 .sidebar-field select {
   width: 100%;
+}
+
+.sidebar-field-checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-field-checkbox input {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
 }
 
 .sidebar-stats {

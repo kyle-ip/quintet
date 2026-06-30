@@ -1,0 +1,29 @@
+{
+  "endless": {
+    "mode": "endless",
+    "startingLives": 3,
+    "startingPoolK": 5,
+    "bossInterval": 5,
+    "gateFormula": { "type": "endless" },
+    "undoPerFloor": 3,
+    "maxModifiers": 0,
+    "gateReliefDelta": 5,
+    "leaderboardKey": "quintet-endless-best"
+  },
+  "roguelike": {
+    "mode": "roguelike",
+    "startingLives": 2,
+    "startingPoolK": 4,
+    "bossInterval": 4,
+    "gateFormula": { "type": "roguelike" },
+    "undoPerFloor": null,
+    "maxModifiers": 5,
+    "modifierDraftInterval": 3,
+    "modifierRarityWeights": {
+      "common": 0.7,
+      "rare": 0.25,
+      "legendary": 0.05
+    },
+    "leaderboardKey": "quintet-roguelike-best"
+  }
+}

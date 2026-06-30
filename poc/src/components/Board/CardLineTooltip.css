@@ -106,6 +106,20 @@
   margin-top: 0.1rem;
 }
 
+.tooltip-line-forming .tooltip-line-label {
+  color: var(--color-text);
+}
+
+.tooltip-line-complete .tooltip-line-label {
+  color: var(--color-score);
+}
+
+.tooltip-empty {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
 .tooltip-formed {
   font-size: 0.62rem;
   font-style: italic;

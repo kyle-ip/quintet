@@ -1,0 +1,61 @@
+[
+  {
+    "id": "line_hunter",
+    "name": "线猎",
+    "nameEn": "Line Hunter",
+    "description": "至少 1 条 complete 线的牌型 ≥ Two Pair",
+    "descriptionEn": "At least one complete line ranks Two Pair or better",
+    "check": {
+      "type": "min_hand_on_any_line",
+      "minHandCategory": "two_pair"
+    },
+    "penalty": {
+      "endless": { "lifeDelta": 1 },
+      "roguelike": { "lifeDelta": 2 }
+    }
+  },
+  {
+    "id": "diagonal_duel",
+    "name": "对角决斗",
+    "nameEn": "Diagonal Duel",
+    "description": "两条对角线均 complete（5/5）",
+    "descriptionEn": "Both diagonals complete (5/5 each)",
+    "check": {
+      "type": "both_diagonals_complete"
+    },
+    "penalty": {
+      "endless": { "lifeDelta": 1 },
+      "roguelike": { "instantDeath": true }
+    }
+  },
+  {
+    "id": "threshold_rush",
+    "name": "门槛冲刺",
+    "nameEn": "Threshold Rush",
+    "description": "总分 ≥ G(n) + 20",
+    "descriptionEn": "Total score ≥ floor target + 20",
+    "check": {
+      "type": "score_at_least_gate_plus",
+      "gateBonus": 20
+    },
+    "penalty": {
+      "endless": { "lifeDelta": 1 },
+      "roguelike": { "lifeDelta": 2 }
+    }
+  },
+  {
+    "id": "sparse_deck",
+    "name": "稀疏牌库",
+    "nameEn": "Sparse Deck",
+    "description": "在 40 张子牌堆下完成且 S ≥ G(n)",
+    "descriptionEn": "Clear on a 40-card deck with score ≥ gate",
+    "check": {
+      "type": "sparse_deck_score",
+      "maxDeckSize": 40
+    },
+    "penalty": {
+      "endless": { "lifeDelta": 1 },
+      "roguelike": { "lifeDelta": 2 }
+    }
+  }
+]

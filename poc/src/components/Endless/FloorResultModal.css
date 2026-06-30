@@ -1,0 +1,32 @@
+.floor-result-modal .floor-result-hero {
+  text-align: center;
+  padding: 0.5rem 0 1rem;
+}
+
+.floor-result-score {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.floor-result-hero--clear .floor-result-score {
+  color: var(--color-accent, #2d6a4f);
+}
+
+.floor-result-hero--fail .floor-result-score {
+  color: #b42318;
+}
+
+.floor-result-delta {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.floor-result-lives,
+.floor-result-boss {
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 0;
+}
