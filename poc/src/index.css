@@ -109,6 +109,15 @@ body {
   min-height: 100vh;
 }
 
+@media (max-width: 900px) and (orientation: landscape) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
 button,
 select {
   font: inherit;
@@ -121,27 +130,4 @@ select {
   border: 1px solid var(--color-btn-border);
   border-radius: 4px;
   padding: 0.2rem 0.35rem;
-}
-
-@media (max-width: 768px) {
-  :root {
-    --cell-size: min(4rem, 18vw);
-    --grid-gap: 3px;
-    --grid-pad: 5px;
-    --play-gap: 0.5rem;
-  }
-
-  body {
-    overflow-x: hidden;
-  }
-
-  select {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  :root {
-    --cell-size: min(3.75rem, 17vw);
-  }
 }

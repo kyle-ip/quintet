@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { MOBILE_LANDSCAPE_QUERY } from "./useMobileLandscapeScale";
 
-const TAP_PLACE_QUERY = "(max-width: 768px), (pointer: coarse)";
+/** Tap-to-place on mobile landscape (no drag needed). */
+const TAP_PLACE_QUERY = `${MOBILE_LANDSCAPE_QUERY}, (hover: none) and (pointer: coarse) and (orientation: landscape)`;
 
 export function useTapPlaceMode(): boolean {
   const [tapPlace, setTapPlace] = useState(() => {

@@ -1,0 +1,93 @@
+.rotate-portrait-gate {
+  display: none;
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .rotate-portrait-gate {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: var(--color-bg);
+  }
+
+  .app:has(.rotate-portrait-gate) .game-layout {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.rotate-portrait-card {
+  max-width: 18rem;
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+  border-radius: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.rotate-portrait-icon {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+}
+
+.rotate-phone {
+  display: block;
+  width: 2rem;
+  height: 3.25rem;
+  margin: 0 auto;
+  border: 3px solid var(--color-accent);
+  border-radius: 6px;
+  transform: rotate(90deg);
+  animation: rotatePhoneHint 2.4s ease-in-out infinite;
+}
+
+.rotate-arrow {
+  position: absolute;
+  right: 0.15rem;
+  bottom: 0.35rem;
+  font-size: 1.75rem;
+  color: var(--color-accent);
+  animation: rotateArrowPulse 2.4s ease-in-out infinite;
+}
+
+.rotate-portrait-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.rotate-portrait-sub {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+@keyframes rotatePhoneHint {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  40%,
+  60% {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes rotateArrowPulse {
+  0%,
+  30% {
+    opacity: 0.35;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}

@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { Board } from "@/components/Board/Board";
 import { Pool } from "@/components/Pool/Pool";
 import { PlayingCard } from "@/components/Card/PlayingCard";
@@ -23,7 +23,9 @@ import { GameSummaryModal } from "@/components/GameSummary/GameSummaryModal";
 import { FirstGameTutorial, shouldShowTutorial } from "@/components/Tutorial/FirstGameTutorial";
 import { useAutoPlay } from "@/hooks/useAutoPlay";
 import { useTapPlaceMode } from "@/hooks/useTapPlaceMode";
+import { useMobileLandscapeScale } from "@/hooks/useMobileLandscapeScale";
 import { MobileStatsBar } from "@/components/Layout/MobileStatsBar";
+import { RotatePortraitGate } from "@/components/Layout/RotatePortraitGate";
 import { FloorBanner } from "@/components/Endless/FloorBanner";
 import { FloorResultModal } from "@/components/Endless/FloorResultModal";
 import { RunSummaryModal } from "@/components/Endless/RunSummaryModal";
@@ -319,20 +321,45 @@ export default function App() {
     }
   }
 
+  const floorBannerVisible =
+    isEndless && !!endlessRun && showFloorBanner && !endlessRun.runOver && floorTarget !== null;
+
+  const layoutRef = useMobileLandscapeScale({
+    boardSize: state.boardSize,
+    poolSize,
+    bannerVisible: floorBannerVisible,
+  });
   const hasProgress = state.turn > 0;
   const undoLabel =
     undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo";
 
   return (
     <div className="app">
+      <RotatePortraitGate />
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="game-layout">
+        <div
+          className="game-layout"
+          ref={layoutRef}
+          style={{ "--board-cols": boardSize } as CSSProperties}
+        >
           <header className="app-topbar">
             <div className="topbar-brand">
               <h1>Quintet</h1>
-              <span className="topbar-score-mobile">{liveScore.total.toFixed(1)}</span>
             </div>
             <div className="topbar-center">
+              <MobileStatsBar
+                score={liveScore.total}
+                turn={state.turn}
+                cellCount={cellCount}
+                deckCount={state.deck.length}
+                actionCount={actionCount}
+                timeLabel={playTimerLabel}
+                isEndless={isEndless && !!endlessRun && !endlessRun.runOver}
+                floor={endlessRun?.floor}
+                target={floorTarget}
+                lives={endlessRun?.lives}
+                runScore={endlessRun?.totalScore}
+              />
               {isEndless && endlessRun && !endlessRun.runOver ? (
                 <div className="topbar-endless" aria-label="Endless run status">
                   <span>Floor {endlessRun.floor}</span>
@@ -380,7 +407,7 @@ export default function App() {
             />
           ) : null}
 
-          {isEndless && endlessRun && showFloorBanner && !endlessRun.runOver && floorTarget !== null ? (
+          {floorBannerVisible ? (
             <FloorBanner
               floor={endlessRun.floor}
               target={floorTarget}
@@ -569,44 +596,32 @@ export default function App() {
             ) : null}
           </div>
 
-          <div className="play-main">
-            <MobileStatsBar
-              score={liveScore.total}
-              turn={state.turn}
-              cellCount={cellCount}
-              deckCount={state.deck.length}
-              actionCount={actionCount}
-              timeLabel={playTimerLabel}
-              isEndless={isEndless && !!endlessRun && !endlessRun.runOver}
-              floor={endlessRun?.floor}
-              target={floorTarget}
-              lives={endlessRun?.lives}
-              runScore={endlessRun?.totalScore}
-            />
+          <div className="play-stage">
+            <div className="play-main">
+              <Board
+                legalDropKeys={legalKeys}
+                isDragging={boardPlacementActive}
+                lastPlacedKey={lastPlacedKey}
+                tapPlaceMode={tapPlaceMode}
+                onCellTap={handleCellTap}
+              />
+            </div>
 
-            <Board
-              legalDropKeys={legalKeys}
-              isDragging={boardPlacementActive}
-              lastPlacedKey={lastPlacedKey}
-              tapPlaceMode={tapPlaceMode}
-              onCellTap={handleCellTap}
-            />
-          </div>
-
-          <div className="play-bottom">
-            {placementActive ? (
-              <p className="tap-place-hint" role="status">
-                Tap a highlighted cell to place the card
-              </p>
-            ) : tapPlaceMode && !poolDisabled ? (
-              <p className="tap-place-hint tap-place-hint-idle">Tap a card from the pool below</p>
-            ) : null}
-            <Pool
-              disabled={poolDisabled}
-              tapPlaceMode={tapPlaceMode}
-              selectedIndex={selectedPoolIndex}
-              onSelectCard={handleSelectPoolCard}
-            />
+            <div className="play-bottom">
+              <Pool
+                disabled={poolDisabled}
+                tapPlaceMode={tapPlaceMode}
+                selectedIndex={selectedPoolIndex}
+                onSelectCard={handleSelectPoolCard}
+                placementHint={
+                  placementActive
+                    ? "Tap highlighted cell"
+                    : tapPlaceMode && !poolDisabled
+                      ? "Tap a card, then a cell"
+                      : null
+                }
+              />
+            </div>
           </div>
         </div>
 

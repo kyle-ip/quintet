@@ -78,6 +78,7 @@ interface PoolProps {
   tapPlaceMode?: boolean;
   selectedIndex?: number | null;
   onSelectCard?: (index: number) => void;
+  placementHint?: string | null;
 }
 
 export function Pool({
@@ -85,6 +86,7 @@ export function Pool({
   tapPlaceMode = false,
   selectedIndex = null,
   onSelectCard,
+  placementHint = null,
 }: PoolProps) {
   const pool = useGameStore((s) => s.state.pool);
   const poolSize = useGameStore((s) => s.poolSize);
@@ -96,7 +98,7 @@ export function Pool({
       <section className="pool-station" aria-label="Deck and card pool" data-testid="card-pool">
         <header className="pool-station-header">
           <span className="pool-station-title">
-            {tapPlaceMode ? "Tap a card" : "Pick a card"}
+            {placementHint ?? (tapPlaceMode ? "Tap a card" : "Pick a card")}
           </span>
           <span className="pool-station-meta" aria-label={`${pool.length} of ${poolSize} in pool`}>
             {pool.length}/{poolSize}
