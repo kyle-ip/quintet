@@ -45,8 +45,14 @@
   display: contents;
 }
 
-.play-cluster {
+.play-cluster,
+.play-side {
   display: contents;
+}
+
+.play-side-top,
+.play-side-bottom {
+  display: none;
 }
 
 .game-sidebar {
@@ -263,7 +269,7 @@
 }
 
 .card-drag-wrapper {
-  width: calc(var(--cell-size) * var(--drag-card-scale, 0.94));
+  width: calc(var(--cell-size) * var(--drag-card-scale, 1));
   aspect-ratio: 5 / 7;
   animation: cardDragPickup 0.16s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
   cursor: grabbing;
@@ -271,13 +277,18 @@
 
 .card-drag-wrapper .playing-card {
   width: 100%;
+  height: 100%;
   transform: rotate(-2.5deg) scale(var(--drag-card-inner-scale, 1));
   transform-origin: center bottom;
 }
 
 .drag-overlay--touch .card-drag-wrapper {
-  --drag-card-scale: 0.82;
-  --drag-card-inner-scale: 0.98;
+  --drag-card-scale: 1;
+  --drag-card-inner-scale: 1;
+}
+
+.drag-overlay--touch .card-drag-wrapper .playing-card {
+  transform: rotate(-2deg) scale(1);
 }
 
 .card-dragging {
@@ -474,6 +485,81 @@ html:has(.game-layout[data-mobile-landscape]) #root {
   min-width: 0;
 }
 
+.game-layout[data-mobile-landscape] .play-side {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--play-side-gap, 0.35rem);
+  width: var(--pool-station-width);
+  max-width: var(--pool-station-width);
+  min-width: 0;
+  flex-shrink: 0;
+  overflow: visible;
+  contain: none;
+}
+
+.game-layout[data-mobile-landscape] .play-side-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .play-side-top-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.game-layout[data-mobile-landscape] .play-side-brand {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stats-bar--rail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.28rem;
+  flex: none;
+  width: 100%;
+  overflow: visible;
+  padding: 0;
+}
+
+.game-layout[data-mobile-landscape] .mobile-stats-bar--rail .mobile-stat {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.04rem;
+  padding: 0.16rem 0.32rem;
+}
+
+.game-layout[data-mobile-landscape] .play-side-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  flex-shrink: 0;
+}
+
+.game-layout[data-mobile-landscape] .play-side-bottom button {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.68rem;
+  border: 1px solid var(--color-btn-border);
+  border-radius: 5px;
+  background: var(--color-btn-bg);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.game-layout[data-mobile-landscape] .play-side-bottom button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .game-layout[data-mobile-landscape] .play-main {
   flex: 0 0 auto;
   display: flex;
@@ -489,16 +575,16 @@ html:has(.game-layout[data-mobile-landscape]) #root {
 
 .game-layout[data-mobile-landscape] .play-bottom {
   flex: 0 0 auto;
-  width: var(--pool-station-width);
-  max-width: var(--pool-station-width);
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   z-index: 1;
-  contain: layout paint;
+  contain: none;
   grid-area: unset;
   align-self: unset;
 }
@@ -670,6 +756,46 @@ html:has(.game-layout[data-mobile-landscape]) #root {
   font-size: 0.58rem;
 }
 
+.game-layout[data-small-tablet] .play-side-top {
+  gap: 0.22rem;
+}
+
+.game-layout[data-small-tablet] .play-side-brand {
+  font-size: 0.76rem;
+}
+
+.game-layout[data-small-tablet] .mobile-stats-bar--rail {
+  gap: 0.22rem;
+}
+
+.game-layout[data-small-tablet] .mobile-stats-bar--rail .mobile-stat {
+  padding: 0.12rem 0.28rem;
+}
+
+.game-layout[data-small-tablet] .mobile-stats-bar--rail .mobile-stat-label {
+  font-size: 0.5rem;
+}
+
+.game-layout[data-small-tablet] .mobile-stats-bar--rail .mobile-stat-value {
+  font-size: 0.66rem;
+}
+
+.game-layout[data-small-tablet] .play-side-bottom {
+  gap: 0.22rem;
+}
+
+.game-layout[data-small-tablet] .play-side-bottom button {
+  min-height: 1.85rem;
+  padding: 0.16rem 0.4rem;
+  font-size: 0.64rem;
+}
+
+.game-layout[data-small-tablet] .btn-settings-mobile {
+  min-width: 1.85rem;
+  min-height: 1.85rem;
+  font-size: 0.95rem;
+}
+
 /* ── Tablet landscape (iPad Pro etc.) — scale up touch UI ── */
 .game-layout[data-tablet-landscape] .app-topbar {
   padding: 0.45rem 0.85rem;
@@ -704,6 +830,27 @@ html:has(.game-layout[data-mobile-landscape]) #root {
   min-width: 2.35rem;
   min-height: 2.35rem;
   font-size: 1.15rem;
+}
+
+.game-layout[data-tablet-landscape] .play-side-brand {
+  font-size: 0.95rem;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stats-bar--rail .mobile-stat {
+  padding: 0.2rem 0.4rem;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stats-bar--rail .mobile-stat-label {
+  font-size: 0.58rem;
+}
+
+.game-layout[data-tablet-landscape] .mobile-stats-bar--rail .mobile-stat-value {
+  font-size: 0.76rem;
+}
+
+.game-layout[data-tablet-landscape] .play-side-bottom button {
+  min-height: 2.35rem;
+  font-size: 0.78rem;
 }
 
 .game-layout[data-tablet-landscape] .play-stage {

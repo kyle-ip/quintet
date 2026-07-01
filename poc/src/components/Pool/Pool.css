@@ -256,18 +256,27 @@
 
 .game-layout[data-mobile-landscape] .pool-station-surface {
   display: grid;
-  grid-template-columns: var(--cell-size) 0.45rem minmax(0, 1fr);
+  grid-template-columns:
+    var(--cell-size) var(--pool-bridge-width, 12px) var(--pool-spread-width, auto);
   align-items: center;
   justify-content: stretch;
   gap: 0;
   padding: var(--pool-surface-pad-y, 0.55rem) var(--pool-surface-pad-x, 0.7rem);
   min-height: calc(var(--pool-card-height) + 1.5rem);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .game-layout[data-mobile-landscape] .pool-station-deck {
   padding-top: 0.35rem;
   gap: 0.3rem;
+  width: var(--cell-size);
+  max-width: var(--cell-size);
+  min-width: 0;
+  justify-self: start;
+}
+
+.game-layout[data-mobile-landscape] .pool-station-deck .deck-stack {
+  max-width: 100%;
 }
 
 .game-layout[data-mobile-landscape] .deck-stack-pile {
@@ -283,8 +292,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--pool-bridge-width, 12px);
   min-height: auto;
   align-self: center;
+  flex-shrink: 0;
 }
 
 .game-layout[data-mobile-landscape] .pool-station-arrow {
@@ -296,20 +307,28 @@
   font-size: 0.48rem;
 }
 
+.game-layout[data-mobile-landscape] .deck-stack-count {
+  right: 0;
+  bottom: -2px;
+}
+
 .game-layout[data-mobile-landscape] .pool-station-spread {
-  overflow: visible;
+  overflow: hidden;
   min-width: 0;
+  width: var(--pool-spread-width, auto);
+  max-width: var(--pool-spread-width, 100%);
+  justify-self: end;
 }
 
 .game-layout[data-mobile-landscape] .pool-cards,
 .game-layout[data-mobile-landscape] .pool-cards--stacked {
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 0.2rem;
-  width: 100%;
-  max-width: 100%;
-  justify-content: center;
-  overflow: visible;
+  gap: var(--pool-card-gap, 0.25rem);
+  width: var(--pool-spread-width, auto);
+  max-width: var(--pool-spread-width, 100%);
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
 .game-layout[data-mobile-landscape] .pool-card {
@@ -355,7 +374,8 @@
 }
 
 .game-layout[data-tablet-landscape] .pool-station-surface {
-  grid-template-columns: var(--cell-size) 0.55rem minmax(0, 1fr);
+  grid-template-columns:
+    var(--cell-size) var(--pool-bridge-width, 16px) var(--pool-spread-width, auto);
   min-height: calc(var(--pool-card-height) + 2.25rem);
   padding-bottom: calc(var(--pool-surface-pad-y, 0.55rem) + 4px);
 }

@@ -24,7 +24,7 @@ import { FirstGameTutorial, shouldShowTutorial } from "@/components/Tutorial/Fir
 import { useAutoPlay } from "@/hooks/useAutoPlay";
 import { useTapPlaceMode } from "@/hooks/useTapPlaceMode";
 import { useMobileLandscapeScale } from "@/hooks/useMobileLandscapeScale";
-import { MobileStatsBar } from "@/components/Layout/MobileStatsBar";
+import { TouchPlaySideBottom, TouchPlaySideTop } from "@/components/Layout/TouchPlayChrome";
 import { RotatePortraitGate } from "@/components/Layout/RotatePortraitGate";
 import { FloorBanner } from "@/components/Endless/FloorBanner";
 import { FloorResultModal } from "@/components/Endless/FloorResultModal";
@@ -343,61 +343,41 @@ export default function App() {
           ref={layoutRef}
           style={{ "--board-cols": boardSize } as CSSProperties}
         >
-          <header className="app-topbar">
-            <div className="topbar-brand">
-              <h1>Quintet</h1>
-            </div>
-            <div className="topbar-center">
-              <MobileStatsBar
-                score={liveScore.total}
-                turn={state.turn}
-                cellCount={cellCount}
-                deckCount={state.deck.length}
-                actionCount={actionCount}
-                timeLabel={playTimerLabel}
-                isEndless={isEndless && !!endlessRun && !endlessRun.runOver}
-                floor={endlessRun?.floor}
-                target={floorTarget}
-                lives={endlessRun?.lives}
-                runScore={endlessRun?.totalScore}
-              />
-              {isEndless && endlessRun && !endlessRun.runOver ? (
-                <div className="topbar-endless" aria-label="Endless run status">
-                  <span>Floor {endlessRun.floor}</span>
-                  {floorTarget !== null ? <span>Target {floorTarget.toFixed(1)}</span> : null}
-                  <span aria-label={`${endlessRun.lives} lives`}>
-                    {"♥".repeat(endlessRun.lives)}
-                    {"♡".repeat(Math.max(0, ENDLESS_STARTING_LIVES - endlessRun.lives))}
-                  </span>
-                  <span>Run {endlessRun.totalScore.toFixed(1)}</span>
-                </div>
-              ) : (
-                <span className="topbar-spacer" />
-              )}
-              <div className="topbar-actions">
-                <button
-                  type="button"
-                  className="btn-settings-mobile"
-                  aria-label="Settings"
-                  aria-expanded={settingsOpen}
-                  onClick={() => setSettingsOpen((open) => !open)}
-                >
-                  ⚙
-                </button>
-                <button
-                  type="button"
-                  onClick={undo}
-                  disabled={!canUndo()}
-                  title={undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo (Ctrl+Z)"}
-                >
-                  {undoLabel}
-                </button>
-                <button type="button" className="btn-new-game" onClick={handleNewGame}>
-                  New game
-                </button>
+          {!tapPlaceMode ? (
+            <header className="app-topbar">
+              <div className="topbar-brand">
+                <h1>Quintet</h1>
               </div>
-            </div>
-          </header>
+              <div className="topbar-center">
+                {isEndless && endlessRun && !endlessRun.runOver ? (
+                  <div className="topbar-endless" aria-label="Endless run status">
+                    <span>Floor {endlessRun.floor}</span>
+                    {floorTarget !== null ? <span>Target {floorTarget.toFixed(1)}</span> : null}
+                    <span aria-label={`${endlessRun.lives} lives`}>
+                      {"♥".repeat(endlessRun.lives)}
+                      {"♡".repeat(Math.max(0, ENDLESS_STARTING_LIVES - endlessRun.lives))}
+                    </span>
+                    <span>Run {endlessRun.totalScore.toFixed(1)}</span>
+                  </div>
+                ) : (
+                  <span className="topbar-spacer" />
+                )}
+                <div className="topbar-actions">
+                  <button
+                    type="button"
+                    onClick={undo}
+                    disabled={!canUndo()}
+                    title={undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo (Ctrl+Z)"}
+                  >
+                    {undoLabel}
+                  </button>
+                  <button type="button" className="btn-new-game" onClick={handleNewGame}>
+                    New game
+                  </button>
+                </div>
+              </div>
+            </header>
+          ) : null}
 
           {settingsOpen ? (
             <button
@@ -437,20 +417,52 @@ export default function App() {
                 />
               </div>
 
-              <div className="play-bottom">
-                <Pool
-                  disabled={poolDisabled}
-                  tapPlaceMode={tapPlaceMode}
-                  selectedIndex={selectedPoolIndex}
-                  onSelectCard={handleSelectPoolCard}
-                  placementHint={
-                    placementActive
-                      ? "Tap highlighted cell"
-                      : tapPlaceMode && !poolDisabled
-                        ? "Drag or tap a card, then a cell"
-                        : null
-                  }
-                />
+              <div className="play-side">
+                {tapPlaceMode ? (
+                  <TouchPlaySideTop
+                    score={liveScore.total}
+                    turn={state.turn}
+                    cellCount={cellCount}
+                    deckCount={state.deck.length}
+                    actionCount={actionCount}
+                    timeLabel={playTimerLabel}
+                    isEndless={isEndless && !!endlessRun && !endlessRun.runOver}
+                    floor={endlessRun?.floor}
+                    target={floorTarget}
+                    lives={endlessRun?.lives}
+                    runScore={endlessRun?.totalScore}
+                    settingsOpen={settingsOpen}
+                    onSettingsToggle={() => setSettingsOpen((open) => !open)}
+                  />
+                ) : null}
+
+                <div className="play-bottom">
+                  <Pool
+                    disabled={poolDisabled}
+                    tapPlaceMode={tapPlaceMode}
+                    selectedIndex={selectedPoolIndex}
+                    onSelectCard={handleSelectPoolCard}
+                    placementHint={
+                      placementActive
+                        ? "Tap highlighted cell"
+                        : tapPlaceMode && !poolDisabled
+                          ? "Drag or tap a card, then a cell"
+                          : null
+                    }
+                  />
+                </div>
+
+                {tapPlaceMode ? (
+                  <TouchPlaySideBottom
+                    undoLabel={undoLabel}
+                    canUndo={canUndo()}
+                    undoTitle={
+                      undoLimit !== null ? `Undo (${undoUsesThisFloor}/${undoLimit})` : "Undo"
+                    }
+                    onUndo={undo}
+                    onNewGame={handleNewGame}
+                  />
+                ) : null}
               </div>
             </div>
           </div>

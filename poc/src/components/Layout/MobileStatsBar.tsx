@@ -10,6 +10,7 @@ interface MobileStatsBarProps {
   target?: number | null;
   lives?: number;
   runScore?: number;
+  variant?: "bar" | "rail";
 }
 
 export function MobileStatsBar({
@@ -24,9 +25,13 @@ export function MobileStatsBar({
   target,
   lives,
   runScore,
+  variant = "bar",
 }: MobileStatsBarProps) {
   return (
-    <div className="mobile-stats-bar" aria-label="Game stats">
+    <div
+      className={`mobile-stats-bar${variant === "rail" ? " mobile-stats-bar--rail" : ""}`}
+      aria-label="Game stats"
+    >
       <div className="mobile-stat mobile-stat-primary">
         <span className="mobile-stat-label">Score</span>
         <span className="mobile-stat-value">{score.toFixed(1)}</span>
